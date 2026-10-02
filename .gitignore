@@ -35,6 +35,9 @@ branding/raw-draft-*.png
 # 本地云环境 ID（个人配置，不进仓库）
 miniprogram/utils/cloud-env.local.js
 
+# 本机开发者工具安装路径（个人配置，不进仓库）
+tools/devtools-path.local.py
+
 # ── 说明 ─────────────────────────────────────────────
 # tools/vlm-keys.example.json 是模板，必须提交（别人靠它知道该填什么）。
 # 上面只忽略 tools/vlm-keys.json 这一个精确路径，不会误伤 .example 版本。

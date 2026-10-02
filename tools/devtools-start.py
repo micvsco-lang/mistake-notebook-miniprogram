@@ -45,14 +45,31 @@ from ctypes import wintypes
 def _find_devtools_dir():
     """按候选列表找开发者工具安装目录。
 
-    别写死 C:\\Program Files —— 本机就装在 D 盘。候选顺序：
-    环境变量 → 本机实测路径 → 官方默认路径。
+    别写死某台机器的路径 —— 换台电脑就找不到，那属于个人隐私也不该进仓库。
+    候选顺序：
+      1. 环境变量 WECHAT_DEVTOOLS_DIR（推荐，最通用）
+      2. 同目录的本地配置文件 devtools-path.local.py（不进仓库）
+      3. 官方默认路径
     """
     env = os.environ.get("WECHAT_DEVTOOLS_DIR")
     if env and os.path.exists(os.path.join(env, "微信开发者工具.exe")):
         return env
+    # 本地配置文件：装在非默认位置时建一个，写一行路径即可。
+    # 文件名带 .local 的都在 .gitignore 里，不会泄露到公开仓库。
+    try:
+        import importlib.util
+        local = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             "devtools-path.local.py")
+        if os.path.exists(local):
+            spec = importlib.util.spec_from_file_location("_dt_local", local)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            p = getattr(mod, "DEVTOOLS_DIR", "")
+            if p and os.path.exists(os.path.join(p, "微信开发者工具.exe")):
+                return p
+    except Exception:
+        pass
     cands = [
-        r"D:\NYT\todesk\小程序\微信web开发者工具",
         r"C:\Program Files (x86)\Tencent\微信web开发者工具",
         r"C:\Program Files\Tencent\微信web开发者工具",
     ]

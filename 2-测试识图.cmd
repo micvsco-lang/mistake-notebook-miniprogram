@@ -1,7 +1,9 @@
 @echo off
 title 测试识图效果
 
-set "NODE=C:\Users\NYT\.workbuddy\binaries\node\versions\22.22.2-3\node.exe"
+rem Node 路径：优先用系统 PATH 里的 node；找不到再回落到本机实测路径。
+set "NODE=node"
+where node >nul 2>nul || set "NODE=C:\Users\NYT\.workbuddy\binaries\node\versions\22.22.2-3\node.exe"
 set "PROJ=%~dp0"
 set "LOGF=%PROJ%识图日志.txt"
 
