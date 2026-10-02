@@ -1,0 +1,74 @@
+<view class="page page-tab">
+
+  <!-- 搜索 -->
+  <view class="search">
+    <text class="search-ico">🔍</text>
+    <input
+      class="search-in"
+      placeholder="搜题号、知识点、题干内容"
+      placeholder-class="search-ph"
+      value="{{keyword}}"
+      bindinput="onInput"
+      confirm-type="search"
+    />
+    <text class="search-clear" wx:if="{{keyword}}" bindtap="clearKw">✕</text>
+  </view>
+
+  <!-- 状态筛选 -->
+  <scroll-view class="tabs" scroll-x enable-flex>
+    <view
+      class="tab {{active === item.key ? 'tab-on' : ''}}"
+      wx:for="{{statusTabs}}"
+      wx:key="key"
+      bindtap="setTab"
+      data-key="{{item.key}}"
+    >
+      {{item.label}}<text class="tab-n">{{counts[item.key] || 0}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 到期筛选 -->
+  <view class="row between due-row">
+    <text class="t3 f24">按知识点掌握度排序，失分多的在前</text>
+    <view class="chip {{onlyDue ? 'chip-on' : ''}}" bindtap="toggleDue">
+      {{onlyDue ? '✓ ' : ''}}只看该复习
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <block wx:for="{{list}}" wx:key="id">
+    <view class="card card-tight item" bindtap="openItem" data-id="{{item.id}}">
+      <view class="row between">
+        <view class="row gap8">
+          <text class="item-no">Q{{item.no}}</text>
+          <view class="score-badge sc-{{item.level}}">{{item.score}}<text class="f22">/{{item.fullScore}}</text></view>
+          <view class="tag {{item.statusCls}}">{{item.statusText}}</view>
+          <view class="tag tag-doubt" wx:if="{{item.doubtCount}}">❓{{item.doubtCount}}</view>
+        </view>
+        <text class="t3 f22 nowrap">{{item.dueText}}</text>
+      </view>
+
+      <view class="item-text clamp2">{{item.text}}</view>
+
+      <view class="row wrap mt8">
+        <view class="tag tag-brand" wx:for="{{item.kpNames}}" wx:for-item="k" wx:key="*this">{{k}}</view>
+        <view class="tag" wx:if="{{item.kpMore}}">+{{item.kpMore}}</view>
+      </view>
+
+      <view class="row gap12 mt16">
+        <view class="btn btn-line btn-sm flex1" wx:if="{{!item.unlocked}}" catchtap="startCorrect" data-id="{{item.id}}">写下错在哪</view>
+        <view class="btn btn-ghost btn-sm flex1" wx:else catchtap="openItem" data-id="{{item.id}}">看错因分析</view>
+        <view class="btn btn-primary btn-sm flex1" catchtap="startTrain" data-id="{{item.id}}">巩固训练</view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 空状态 -->
+  <view class="card empty" wx:if="{{empty}}">
+    <view class="empty-ico">{{keyword ? '🔍' : '📚'}}</view>
+    <view class="empty-txt">{{keyword ? '没找到匹配的错题' : '这个分类下还没有错题'}}</view>
+    <view class="empty-sub" wx:if="{{!keyword}}">去导入一份学习通作业试试</view>
+    <view class="btn btn-ghost mt24" wx:if="{{!keyword}}" style="width:300rpx;margin:24rpx auto 0" bindtap="goImport">导入作业</view>
+  </view>
+
+</view>

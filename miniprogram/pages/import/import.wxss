@@ -1,0 +1,365 @@
+/* ============ 切换 ============ */
+.tabs {
+  display: flex;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 8rpx;
+  margin-bottom: 22rpx;
+  box-shadow: 0 2rpx 12rpx rgba(22, 24, 29, 0.04);
+}
+.tab {
+  flex: 1;
+  text-align: center;
+  height: 68rpx;
+  line-height: 68rpx;
+  font-size: 27rpx;
+  color: var(--t2);
+  border-radius: 12rpx;
+}
+.tab-on {
+  background: var(--brand);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* ============ 步骤 ============ */
+.steps { display: flex; flex-direction: column; gap: 14rpx; }
+.step { display: flex; gap: 14rpx; align-items: flex-start; }
+.step-n {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 24rpx;
+  font-weight: 600;
+  text-align: center;
+  line-height: 40rpx;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+}
+.step-t { font-size: 26rpx; color: var(--t2); line-height: 1.65; flex: 1; }
+
+/* ============ 输入 ============ */
+.ta {
+  width: 100%;
+  min-height: 300rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: var(--t1);
+  background: #f7f9fc;
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+  box-sizing: border-box;
+  font-family: Menlo, Consolas, monospace;
+}
+.ta-sm { min-height: 150rpx; font-family: inherit; font-size: 27rpx; }
+.ta-ph { color: #b9bfc9; font-size: 25rpx; }
+
+.err {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--bad);
+  background: var(--bad-soft);
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  line-height: 1.6;
+}
+
+.hint { font-size: 24rpx; color: var(--t3); line-height: 1.65; }
+
+/* ============ 预览 ============ */
+.pv {
+  padding: 18rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+}
+.pv:last-child { border-bottom: none; }
+.pv-title { font-size: 28rpx; font-weight: 500; }
+.pv-sub { font-size: 24rpx; color: var(--t3); margin-top: 6rpx; }
+
+/* ============ 表单行 ============ */
+.fld {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.fld:last-child { border-bottom: none; }
+.fld-l {
+  width: 170rpx;
+  font-size: 26rpx;
+  color: var(--t2);
+  flex-shrink: 0;
+}
+.fld-in {
+  flex: 1;
+  font-size: 27rpx;
+  color: var(--t1);
+  height: 60rpx;
+  line-height: 60rpx;
+}
+.fld-pick {
+  font-size: 27rpx;
+  color: var(--t1);
+  height: 60rpx;
+  line-height: 60rpx;
+}
+
+/* ============ 色条 ============ */
+.bar-right { background: #16a34a; }
+.bar-teacher { background: #7c3aed; }
+.bar-bad { background: #dc2626; }
+
+/* ============ 照片 ============ */
+.photo-grid { display: flex; flex-wrap: wrap; gap: 14rpx; margin-top: 16rpx; }
+.photo-item { position: relative; width: 180rpx; height: 180rpx; }
+.photo-img {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid var(--line);
+}
+.photo-del {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  background: rgba(22, 24, 29, 0.72);
+  color: #fff;
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============ 知识点 ============ */
+.kp-edit {
+  margin-top: 18rpx;
+  border-top: 1rpx solid var(--line);
+  padding-top: 10rpx;
+  max-height: 520rpx;
+  overflow-y: auto;
+}
+.kp-node {
+  padding: 16rpx 20rpx;
+  font-size: 26rpx;
+  color: var(--t2);
+  border-radius: 10rpx;
+}
+.kp-on { color: var(--brand); font-weight: 500; background: var(--brand-soft); }
+.kp-check { margin-right: 12rpx; font-size: 24rpx; }
+
+.danger { color: var(--bad); border-color: #f6c9c9; }
+
+/* ============ 拍照识别：照片队列 ============ */
+.btn-xs {
+  height: 56rpx;
+  line-height: 56rpx;
+  font-size: 24rpx;
+  padding: 0 24rpx;
+  border-radius: 28rpx;
+}
+
+.shot {
+  display: flex;
+  gap: 18rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+}
+.shot:last-child { border-bottom: none; }
+.shot-img {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid var(--line);
+  flex-shrink: 0;
+  background: #f4f6fa;
+}
+.shot-body { flex: 1; min-width: 0; }
+.shot-state { display: flex; align-items: center; gap: 14rpx; }
+
+/* ============ 拍照识别：识别结果 ============ */
+.q-item {
+  border: 1rpx solid var(--line);
+  border-radius: 14rpx;
+  margin-top: 16rpx;
+  overflow: hidden;
+}
+.q-off { opacity: 0.45; }
+
+.q-head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 20rpx 22rpx;
+}
+.q-check {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid #ccd2dc;
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: #fff;
+  text-align: center;
+  line-height: 36rpx;
+}
+.q-check-on { background: var(--brand); border-color: var(--brand); }
+.q-no {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--brand);
+  flex-shrink: 0;
+}
+.q-gist { font-size: 27rpx; color: var(--t1); line-height: 1.4; }
+.q-meta { font-size: 22rpx; color: var(--t3); margin-top: 6rpx; }
+.q-arrow { font-size: 24rpx; color: var(--t3); flex-shrink: 0; }
+
+.q-edit {
+  padding: 0 22rpx 24rpx;
+  border-top: 1rpx solid var(--line);
+}
+.q-tagline {
+  font-size: 23rpx;
+  color: #b45309;
+  background: #fff7ed;
+  border-radius: 10rpx;
+  padding: 12rpx 16rpx;
+  margin: 16rpx 0 4rpx;
+}
+.q-fld-l {
+  font-size: 24rpx;
+  color: var(--t3);
+  margin: 20rpx 0 8rpx;
+}
+.q-fld-l2 { font-size: 23rpx; color: var(--t3); margin-right: 12rpx; }
+
+/* 各栏对应的原图切片：贴在栏位上，核对时一眼看到「这段字在图上哪一块」 */
+.q-crop {
+  width: 100%;
+  border-radius: 10rpx;
+  background: #f2f4f7;
+  margin-bottom: 10rpx;
+}
+
+/* 核对卡片里的原图：宽度撑满、圆角，点开进系统看图器 */
+.q-photo {
+  width: 100%;
+  border-radius: 10rpx;
+  background: #f2f4f7;
+}
+
+.fld-in-mini {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #f7f9fc;
+  border-radius: 12rpx;
+  padding: 0 18rpx;
+  height: 72rpx;
+}
+.q-num {
+  flex: 1;
+  font-size: 27rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+}
+
+
+/* ============ 手写符号对照 ============ */
+.bar-sym { background: #0891b2; }
+.sym-group { margin-top: 18rpx; }
+.sym-gname {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #0891b2;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+.sym-row {
+  display: flex;
+  gap: 18rpx;
+  padding: 14rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+  align-items: flex-start;
+}
+.sym-row:last-child { border-bottom: none; }
+.sym-sym {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--t1);
+  width: 110rpx;
+  flex-shrink: 0;
+  text-align: center;
+  background: #f7f9fc;
+  border-radius: 10rpx;
+  padding: 6rpx 0;
+}
+.sym-name { font-size: 26rpx; font-weight: 500; color: var(--t1); }
+.sym-look { font-size: 23rpx; color: #b45309; margin-top: 4rpx; line-height: 1.5; }
+.sym-scene { font-size: 22rpx; color: var(--t3); margin-top: 4rpx; line-height: 1.5; }
+
+/* ============ 手机抓取指引 ============ */
+.bar-grab { background: #7c3aed; }
+.gl {
+  font-size: 25rpx;
+  color: var(--t1);
+  line-height: 1.7;
+  padding: 8rpx 0;
+}
+.gl-sm { font-size: 24rpx; color: var(--t2); }
+.way {
+  margin-top: 20rpx;
+  padding: 16rpx 20rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  background: #fafbfe;
+}
+.way-head { display: flex; align-items: center; gap: 12rpx; flex-wrap: wrap; }
+.way-name { font-size: 27rpx; font-weight: 600; color: var(--t1); }
+.way-tag {
+  font-size: 22rpx;
+  color: #7c3aed;
+  background: #f3e8ff;
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+}
+
+/* 知识点搜索：输入框 + 结果列表 */
+.kp-search {
+  background: #f7f9fc;
+  border-radius: 10rpx;
+  padding: 14rpx 20rpx;
+  font-size: 25rpx;
+  margin-top: 8rpx;
+}
+.kp-hits {
+  margin-top: 8rpx;
+  background: #fbfcfe;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+.kp-hit {
+  padding: 14rpx 20rpx;
+  border-bottom: 1rpx solid #eef1f6;
+}
+.kp-hit:last-child { border-bottom: 0; }
+.kp-hit-name { display: block; font-size: 26rpx; color: var(--t1); }
+.kp-hit-path { display: block; font-size: 21rpx; color: var(--t3); margin-top: 4rpx; }
+
+/* 本份总分输入框 */
+.ts-score {
+  width: 130rpx;
+  background: #f7f9fc;
+  border-radius: 8rpx;
+  padding: 10rpx 16rpx;
+  font-size: 26rpx;
+  text-align: center;
+}
+.ts-line { align-items: center; }
+.f21 { font-size: 21rpx; }
+
+/* 卡片里的「删掉这道题」 */
+.q-del { margin-top: 20rpx; color: #a33; }

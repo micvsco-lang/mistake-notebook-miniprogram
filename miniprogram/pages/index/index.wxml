@@ -1,0 +1,103 @@
+<import src="../../templates/nodes.wxml" />
+
+<view class="page page-tab">
+
+  <!-- ============ 概览 ============ -->
+  <view class="hero">
+    <view class="hero-course nowrap">{{course}}</view>
+    <view class="hero-row">
+      <view class="hero-main">
+        <text class="hero-num">{{stats.byStatus.new}}</text>
+        <text class="hero-unit">道待订正</text>
+      </view>
+      <view class="hero-side">
+        <view class="hero-side-item">
+          <text class="hero-side-num">{{stats.totalLost}}</text>
+          <text class="hero-side-lbl">丢分</text>
+        </view>
+        <view class="hero-side-item">
+          <text class="hero-side-num">{{stats.byStatus.mastered}}</text>
+          <text class="hero-side-lbl">已掌握</text>
+        </view>
+      </view>
+    </view>
+    <view class="hero-bar">
+      <view class="hero-bar-in" style="width:{{stats.avgRatio * 100}}%"></view>
+    </view>
+    <view class="hero-foot">
+      <text>平均得分率 {{stats.avgRatio * 100}}%</text>
+      <text bindtap="goStats" class="hero-link">看统计 ›</text>
+    </view>
+  </view>
+
+  <!-- ============ 待订正 ============ -->
+  <block wx:if="{{todo.length}}">
+    <view class="sec-title">先订正 · 这些题你还没写下「错在哪」</view>
+    <view class="card card-tight item" wx:for="{{todo}}" wx:key="id" bindtap="openItem" data-id="{{item.id}}">
+      <view class="row between">
+        <view class="row gap8">
+          <text class="item-no">Q{{item.no}}</text>
+          <view class="score-badge sc-{{item.level}}">{{item.score}}<text class="f22">/{{item.fullScore}}</text></view>
+        </view>
+        <view class="item-due t3 f22 nowrap">{{item.title}}</view>
+      </view>
+      <view class="item-text clamp2">{{item.text}}</view>
+      <view class="row wrap mt8">
+        <view class="tag tag-brand" wx:for="{{item.kpNames}}" wx:for-item="k" wx:key="*this">{{k}}</view>
+      </view>
+      <view class="row between mt12">
+        <view class="row wrap flex1">
+          <view class="tag tag-bad" wx:if="{{item.verdict === 'wrong'}}">失分最多</view>
+          <view class="tag tag-warn" wx:elif="{{item.verdict === 'partial'}}">部分失分</view>
+        </view>
+        <view class="btn btn-primary btn-sm" catchtap="startCorrect" data-id="{{item.id}}">写下错在哪</view>
+      </view>
+    </view>
+    <view class="more" wx:if="{{todoMore}}" bindtap="goList">还有 {{todoMore}} 道待订正 ›</view>
+  </block>
+
+  <!-- ============ 空状态 ============ -->
+  <view class="card empty" wx:if="{{ready && !hasData}}">
+    <view class="empty-ico">📥</view>
+    <view class="empty-txt">还没有错题</view>
+    <view class="empty-sub">从学习通导入一份作业，或手动录一道</view>
+    <view class="btn btn-primary mt24" style="width:320rpx;margin:24rpx auto 0" bindtap="goImport">去导入</view>
+  </view>
+
+  <view class="card empty" wx:if="{{ready && hasData && !todo.length}}">
+    <view class="empty-ico">✅</view>
+    <view class="empty-txt">待订正的都写完了</view>
+    <view class="empty-sub">去巩固训练里把该复习的过一遍</view>
+  </view>
+
+  <!-- ============ 该复习了 ============ -->
+  <block wx:if="{{review.length}}">
+    <view class="sec-title">该复习了 · 按记忆曲线到期</view>
+    <view class="card card-tight" wx:for="{{review}}" wx:key="id">
+      <view class="row between">
+        <view class="row gap8 flex1">
+          <text class="item-no">Q{{item.no}}</text>
+          <text class="t2 f26 clamp2 flex1">{{item.text}}</text>
+        </view>
+        <view class="tag tag-purple" catchtap="startTrain" data-id="{{item.id}}">去训练</view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ============ 底栏操作 ============ -->
+  <view class="quick">
+    <view class="quick-btn" bindtap="goImport">
+      <text class="quick-ico">⬇︎</text>
+      <text class="quick-lbl">导入新作业</text>
+    </view>
+    <view class="quick-btn" bindtap="goList">
+      <text class="quick-ico">☰</text>
+      <text class="quick-lbl">全部错题</text>
+    </view>
+    <view class="quick-btn" bindtap="goStats">
+      <text class="quick-ico">◔</text>
+      <text class="quick-lbl">掌握情况</text>
+    </view>
+  </view>
+
+</view>

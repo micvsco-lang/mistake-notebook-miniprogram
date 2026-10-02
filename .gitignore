@@ -1,0 +1,41 @@
+# ── 本地密钥（绝对不要提交真实 Key）────────────────────────
+tools/vlm-keys.json
+
+# ── 本地生成物 / 缓存 ─────────────────────────────────
+tools/vlm-compare/
+tools/e2e-shots/
+tools/preview-qr.png
+tools/preview-shot.png
+node_modules/
+__pycache__/
+*.pyc
+
+# ── 含本机绝对路径或个人环境信息的中间文件 ───────────────
+tools/jobs.json
+tools/devtools-backup/
+tools/annotate-sidebar.py
+tools/seed-src/
+
+# ── 微信开发者工具私有配置（含本机设置，各人不同）────────
+project.private.config.json
+
+# ── 作者的个人文档与启动脚本（含本机路径 / 属工作日志）────
+启动开发者工具.cmd
+进度与交接.md
+界面预览.html
+拍照识别-界面预览.html
+真机运行清单.html
+
+# ── 废弃的中间产物 ───────────────────────────────────
+branding/raw-draft-*.png
+
+# 测试脚本的日志（含本机绝对路径与识别内容，不进仓库）
+识图日志.txt
+
+# 本地云环境 ID（个人配置，不进仓库）
+miniprogram/utils/cloud-env.local.js
+
+# ── 说明 ─────────────────────────────────────────────
+# tools/vlm-keys.example.json 是模板，必须提交（别人靠它知道该填什么）。
+# 上面只忽略 tools/vlm-keys.json 这一个精确路径，不会误伤 .example 版本。
+# 架构方案.html 不含任何本机信息，有意保留并公开。

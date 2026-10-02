@@ -1,0 +1,233 @@
+.detail-page { padding-bottom: 200rpx; }
+
+/* ============ 头部 ============ */
+.head {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(22, 24, 29, 0.04);
+}
+.head-no {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--brand);
+}
+.head-sub {
+  font-size: 24rpx;
+  color: var(--t3);
+  margin-top: 16rpx;
+}
+.head-gist {
+  font-size: 28rpx;
+  color: var(--t2);
+  margin-top: 8rpx;
+  line-height: 1.6;
+}
+
+/* 区块色条变体 */
+.bar-mine { background: #f59e0b; }
+.bar-right { background: #16a34a; }
+.bar-teacher { background: #7c3aed; }
+.bar-done { background: #2b6cff; }
+.bar-origin { background: #64748b; }
+
+/* ============ 原始照片 ============ */
+.origin-img {
+  width: 100%;
+  border-radius: 12rpx;
+  border: 1rpx solid var(--line);
+  margin-top: 8rpx;
+}
+
+/* ============ 订正内容 ============ */
+.mine-text {
+  font-size: 28rpx;
+  line-height: 1.75;
+  color: var(--t1);
+  background: #f7f9fc;
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+  white-space: pre-wrap;
+}
+.mine-photos { display: flex; flex-wrap: wrap; gap: 14rpx; margin-top: 16rpx; }
+.mine-photo {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid var(--line);
+}
+
+/* ============ 锁定态 ============ */
+.lock {
+  background: linear-gradient(180deg, #fbfcfe 0%, #f5f7fb 100%);
+  border: 1rpx dashed #d6dbe5;
+  box-shadow: none;
+  text-align: center;
+  padding: 44rpx 40rpx;
+}
+.lock-ico { font-size: 56rpx; line-height: 1; }
+.lock-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-top: 18rpx;
+  color: var(--t1);
+}
+.lock-desc {
+  font-size: 26rpx;
+  color: var(--t2);
+  line-height: 1.7;
+  margin-top: 12rpx;
+}
+
+/* ============ 错因选项 ============ */
+.cause-list { display: flex; flex-direction: column; gap: 14rpx; }
+.cause {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 14rpx;
+  border: 1rpx solid var(--line);
+  background: #fcfdfe;
+}
+.cause-on {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.cause-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
+  background: #d6dbe5;
+  margin-top: 14rpx;
+  flex-shrink: 0;
+}
+.cause-on .cause-dot { background: var(--brand); }
+.cause-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--t1);
+}
+.cause-on .cause-name { color: var(--brand-deep); }
+.cause-remedy {
+  font-size: 23rpx;
+  color: var(--t3);
+  line-height: 1.55;
+  margin-top: 6rpx;
+}
+.cause-check {
+  font-size: 30rpx;
+  color: var(--brand);
+  font-weight: 600;
+  flex-shrink: 0;
+  padding-top: 2rpx;
+}
+
+/* ============ 依据 ============ */
+.ev {
+  padding: 18rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+}
+.ev:last-child { border-bottom: none; }
+.ev-code {
+  font-size: 23rpx;
+  color: var(--brand);
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+.ev-text {
+  font-size: 26rpx;
+  color: var(--t1);
+  line-height: 1.7;
+}
+.ev-src {
+  font-size: 22rpx;
+  color: var(--t3);
+  margin-top: 8rpx;
+}
+
+/* ============ 建议 ============ */
+.advice {
+  font-size: 27rpx;
+  line-height: 1.8;
+  color: var(--t1);
+  background: #f7f9fc;
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+  white-space: pre-wrap;
+}
+
+/* ============ 知识点编辑 ============ */
+.kp-edit {
+  margin-top: 18rpx;
+  border-top: 1rpx solid var(--line);
+  padding-top: 10rpx;
+  max-height: 520rpx;
+  overflow-y: auto;
+}
+.kp-node {
+  padding: 16rpx 20rpx;
+  font-size: 26rpx;
+  color: var(--t2);
+  border-radius: 10rpx;
+}
+.kp-on {
+  color: var(--brand);
+  font-weight: 500;
+  background: var(--brand-soft);
+}
+.kp-check { margin-right: 12rpx; font-size: 24rpx; }
+
+/* ============ 底部操作栏 ============ */
+.foot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 18rpx;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1rpx solid var(--line);
+  z-index: 10;
+}
+.foot .flex1 { flex: 1; }
+
+/* ============ 我的疑惑 ============ */
+.bar-doubt { background: #ea580c; }
+.doubt {
+  padding: 16rpx 20rpx;
+  border: 1rpx solid var(--line);
+  border-left: 6rpx solid #ea580c;
+  border-radius: 12rpx;
+  background: #fffaf5;
+  margin-top: 14rpx;
+}
+.doubt-head { display: flex; align-items: center; gap: 12rpx; }
+.doubt-tag {
+  font-size: 23rpx;
+  font-weight: 600;
+  color: #ea580c;
+  background: #ffedd5;
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+}
+.doubt-time { font-size: 22rpx; color: var(--t3); flex: 1; }
+.doubt-del {
+  font-size: 26rpx;
+  color: var(--t3);
+  padding: 4rpx 12rpx;
+}
+.doubt-text {
+  font-size: 26rpx;
+  color: var(--t1);
+  line-height: 1.7;
+  margin-top: 10rpx;
+  white-space: pre-wrap;
+}
+.doubt-edit {
+  margin-top: 16rpx;
+  border-top: 1rpx dashed var(--line);
+  padding-top: 16rpx;
+}

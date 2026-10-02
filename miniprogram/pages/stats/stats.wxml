@@ -1,0 +1,94 @@
+<view class="page page-tab">
+
+  <!-- ============ 总览 ============ -->
+  <view class="grid">
+    <view class="g-cell">
+      <text class="g-n">{{stats.total}}</text>
+      <text class="g-l">错题总数</text>
+    </view>
+    <view class="g-cell">
+      <text class="g-n warn">{{stats.byStatus.new}}</text>
+      <text class="g-l">待订正</text>
+    </view>
+    <view class="g-cell">
+      <text class="g-n ok">{{stats.byStatus.mastered}}</text>
+      <text class="g-l">已掌握</text>
+    </view>
+    <view class="g-cell">
+      <text class="g-n bad">{{stats.totalLost}}</text>
+      <text class="g-l">丢分合计</text>
+    </view>
+  </view>
+
+  <!-- ============ 建议 ============ -->
+  <view class="blk">
+    <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">现在最该做的</text></view>
+    <view class="advice">{{advice}}</view>
+    <view class="row gap12 mt16">
+      <view class="btn btn-ghost btn-sm flex1" bindtap="goList">去错题本</view>
+      <view class="btn btn-primary btn-sm flex1" bindtap="goTrain">去训练</view>
+    </view>
+  </view>
+
+  <!-- ============ 进度分布 ============ -->
+  <view class="blk">
+    <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">掌握进度</text></view>
+    <view class="stat-row" wx:for="{{statusBars}}" wx:key="key">
+      <text class="stat-lbl">{{item.label}}</text>
+      <view class="bar flex1">
+        <view class="bar-in bar-in-{{item.key}}" style="width:{{item.pct}}%"></view>
+      </view>
+      <text class="stat-n">{{item.n}}</text>
+    </view>
+    <view class="t3 f22 mt16">平均得分率 {{stats.avgRatio * 100}}% · 今天待复习 {{stats.due}} 道</view>
+  </view>
+
+  <!-- ============ 错因分布 ============ -->
+  <view class="blk" wx:if="{{stats.causes.length}}">
+    <view class="blk-head">
+      <view class="blk-bar bar-bad"></view>
+      <text class="blk-title">错因分布</text>
+      <text class="blk-head-right">按出现次数</text>
+    </view>
+    <view class="stat-row" wx:for="{{stats.causes}}" wx:key="code">
+      <text class="stat-lbl">{{item.name}}</text>
+      <view class="bar flex1">
+        <view class="bar-in bar-cause" style="width:{{item.count / maxCause * 100}}%"></view>
+      </view>
+      <text class="stat-n">{{item.count}}</text>
+    </view>
+    <view class="t3 f22 mt16">错因归类来自教师批语与你的订正记录，可在详情页手动改判。</view>
+  </view>
+
+  <!-- ============ 知识点 ============ -->
+  <view class="blk" wx:if="{{stats.kpStats.length}}">
+    <view class="blk-head">
+      <view class="blk-bar"></view>
+      <text class="blk-title">知识点强弱</text>
+      <text class="blk-head-right">按丢分排序</text>
+    </view>
+    <view class="kp-row" wx:for="{{stats.kpStats}}" wx:key="id">
+      <view class="row between">
+        <text class="kp-name">{{item.name}}</text>
+        <text class="t3 f22">{{item.mastered}}/{{item.total}} 已掌握 · 丢 {{item.lost}} 分</text>
+      </view>
+      <view class="bar mt8">
+        <view class="bar-in {{item.lost / maxKpLost > 0.6 ? 'bar-weak' : item.lost / maxKpLost > 0.3 ? 'bar-mid' : 'bar-ok'}}" style="width:{{item.lost / maxKpLost * 100}}%"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ============ 空 ============ -->
+  <view class="card empty" wx:if="{{!hasData}}">
+    <view class="empty-ico">📊</view>
+    <view class="empty-txt">还没有可统计的数据</view>
+    <view class="empty-sub">导入作业后这里会显示错因分布和知识点强弱</view>
+    <view class="btn btn-ghost mt24" style="width:300rpx;margin:24rpx auto 0" bindtap="goImport">去导入</view>
+  </view>
+
+  <view class="foot-note">
+    数据全部保存在本机小程序里，不上传任何服务器。<br />
+    换设备前记得在「导入与备份」里导出一份。
+  </view>
+
+</view>

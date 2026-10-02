@@ -1,0 +1,29 @@
+{
+  "photo": "学习通作业助手/抓取/attachments/work01/07.jpg（本机路径，不入库）",
+  "note": "Kimi K3 转录（2026-09-24）。场景：HW2 极限证明，学生把题目**手抄**在解答页顶部（不是印刷体！），同样旋转90°。这击中提示词的盲区——「stem=印刷体」的判别标准在手抄题时失效。",
+  "modelOutput": {
+    "questions": [
+      {
+        "no": 4,
+        "type": "证明题",
+        "gist": "绝对值趋于零则数列趋于零",
+        "stem": "若 lim(n→∞)|xₙ|=0，则 lim(n→∞)xₙ=0",
+        "myAnswer": "证明：由于∀ε>0，∃N∈N₊，n>N时||xₙ|−0|<ε□。所以∀ε>0，∃N∈N₊，n>N时|xₙ−0|□<ε。故∀ε>0，∃N∈N₊，n>N时|xₙ−0|<ε，即lim(n→∞)xₙ=0。",
+        "rightAnswer": "",
+        "comment": "",
+        "score": null,
+        "fullScore": null,
+        "kpNames": [],
+        "confidence": "medium"
+      }
+    ]
+  },
+  "expect": {
+    "questionCount": 1,
+    "stemEmpty": false,
+    "myAnswerNonEmpty": true,
+    "kpAllInWhitelist": true,
+    "kpExact": 0,
+    "scoreNull": true
+  }
+}

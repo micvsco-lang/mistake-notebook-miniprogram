@@ -1,0 +1,76 @@
+/* ============ 搜索 ============ */
+.search {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  height: 80rpx;
+  box-shadow: 0 2rpx 12rpx rgba(22, 24, 29, 0.04);
+}
+.search-ico { font-size: 26rpx; opacity: 0.5; margin-right: 12rpx; }
+.search-in { flex: 1; font-size: 28rpx; height: 80rpx; }
+.search-ph { color: #b9bfc9; }
+.search-clear { font-size: 26rpx; color: var(--t3); padding: 8rpx 4rpx 8rpx 16rpx; }
+
+/* ============ 状态标签 ============ */
+.tabs {
+  display: flex;
+  white-space: nowrap;
+  margin: 22rpx 0 6rpx;
+}
+.tab {
+  display: inline-flex;
+  align-items: center;
+  height: 64rpx;
+  padding: 0 26rpx;
+  margin-right: 14rpx;
+  border-radius: 32rpx;
+  background: #fff;
+  font-size: 26rpx;
+  color: var(--t2);
+  flex-shrink: 0;
+}
+.tab-on {
+  background: var(--brand);
+  color: #fff;
+  font-weight: 500;
+}
+.tab-n {
+  margin-left: 8rpx;
+  font-size: 22rpx;
+  opacity: 0.7;
+}
+
+/* ============ 到期筛选 ============ */
+.due-row { margin: 16rpx 4rpx 16rpx; }
+.chip {
+  font-size: 24rpx;
+  color: var(--t2);
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 8rpx 22rpx;
+  flex-shrink: 0;
+}
+.chip-on { background: var(--brand-soft); color: var(--brand); font-weight: 500; }
+
+/* ============ 列表项 ============ */
+.item { transition: transform 0.12s; }
+.item:active { transform: scale(0.992); }
+.item-no {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-radius: 8rpx;
+  padding: 2rpx 12rpx;
+}
+.item-text {
+  font-size: 28rpx;
+  color: var(--t1);
+  margin-top: 14rpx;
+  line-height: 1.55;
+}
+
+/* 疑惑点标记 */
+.tag-doubt { background: #ffedd5; color: #ea580c; }

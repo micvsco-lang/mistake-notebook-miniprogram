@@ -1,0 +1,39 @@
+<!--
+  richNodes —— 题目内容渲染模板
+
+  为什么不直接用 rich-text：
+  rich-text 对行内公式图的尺寸和对齐几乎不可控，而这些公式图是和文字混排的
+  （「对任意实数 [ε的图]，都存在 [x的图]」），一旦对齐错位整段就没法读。
+  这里改成构建期把 HTML 解析成节点数组，运行时用 text / image 精确控制。
+
+  用法：<import src="../../templates/nodes.wxml" />
+        <template is="richNodes" data="{{nodes: item.stem}}" />
+
+  使用方需要在页面里实现 onTapFx（点公式图看大图）与 onTapPhoto（点手写照片看大图）。
+-->
+<template name="richNodes">
+  <view class="rn">
+    <block wx:for="{{nodes}}" wx:key="index">
+      <text wx:if="{{item.t === 't'}}" class="rn-t">{{item.v}}</text>
+      <view wx:elif="{{item.t === 'br'}}" class="rn-br"></view>
+      <image
+        wx:elif="{{item.p === 1}}"
+        class="rn-photo"
+        src="{{item.s}}"
+        mode="widthFix"
+        lazy-load="{{true}}"
+        bindtap="onTapPhoto"
+        data-src="{{item.s}}"
+      />
+      <image
+        wx:else
+        class="rn-fx"
+        src="{{item.s}}"
+        style="width:{{item.w}}rpx;height:{{item.h}}rpx"
+        bindtap="onTapFx"
+        data-src="{{item.s}}"
+      />
+    </block>
+    <view wx:if="{{!nodes || !nodes.length}}" class="rn-empty">{{empty || '（无内容）'}}</view>
+  </view>
+</template>

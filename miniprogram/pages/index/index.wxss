@@ -1,0 +1,87 @@
+/* ============ 顶部概览 ============ */
+.hero {
+  background: linear-gradient(135deg, #2b6cff 0%, #4b8bff 55%, #6aa4ff 100%);
+  border-radius: 24rpx;
+  padding: 32rpx 32rpx 26rpx;
+  color: #fff;
+  box-shadow: 0 10rpx 30rpx rgba(43, 108, 255, 0.22);
+  margin-bottom: 8rpx;
+}
+.hero-course {
+  font-size: 24rpx;
+  opacity: 0.86;
+  margin-bottom: 18rpx;
+}
+.hero-row { display: flex; align-items: flex-end; justify-content: space-between; }
+.hero-main { display: flex; align-items: baseline; }
+.hero-num { font-size: 76rpx; font-weight: 600; line-height: 1; letter-spacing: -2rpx; }
+.hero-unit { font-size: 26rpx; margin-left: 12rpx; opacity: 0.9; }
+.hero-side { display: flex; gap: 36rpx; padding-bottom: 6rpx; }
+.hero-side-item { display: flex; flex-direction: column; align-items: flex-end; }
+.hero-side-num { font-size: 34rpx; font-weight: 600; line-height: 1.1; }
+.hero-side-lbl { font-size: 22rpx; opacity: 0.8; margin-top: 4rpx; }
+
+.hero-bar {
+  height: 10rpx;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 5rpx;
+  overflow: hidden;
+  margin-top: 24rpx;
+}
+.hero-bar-in { height: 100%; background: #fff; border-radius: 5rpx; }
+.hero-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 22rpx;
+  opacity: 0.9;
+  margin-top: 14rpx;
+}
+.hero-link { text-decoration: underline; }
+
+/* ============ 列表项 ============ */
+.item { transition: transform 0.12s; }
+.item:active { transform: scale(0.992); }
+.item-no {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-radius: 8rpx;
+  padding: 2rpx 12rpx;
+}
+.item-text {
+  font-size: 28rpx;
+  color: var(--t1);
+  margin-top: 14rpx;
+  line-height: 1.55;
+}
+.item-due { max-width: 260rpx; }
+
+.more {
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--brand);
+  padding: 8rpx 0 4rpx;
+}
+
+/* ============ 底部快捷 ============ */
+.quick {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 12rpx;
+}
+.quick-btn {
+  flex: 1;
+  background: #fff;
+  border-radius: 18rpx;
+  padding: 26rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+  box-shadow: 0 2rpx 12rpx rgba(22, 24, 29, 0.04);
+}
+.quick-btn:active { background: #f7f9fc; }
+.quick-ico { font-size: 36rpx; color: var(--brand); line-height: 1; }
+.quick-lbl { font-size: 24rpx; color: var(--t2); }

@@ -1,0 +1,39 @@
+{
+  "_README": [
+    "这是 tools/compare-vlm.js 的 Key 配置模板。",
+    "用法：复制本文件为同目录下的 vlm-keys.json，把你实际拥有的 Key 填进去。",
+    "vlm-keys.json 已被 .gitignore 忽略，不会进版本库 —— 请不要提交任何真实 Key。",
+    "只填你有 Key 的那几家即可，未填的会被脚本跳过。",
+    "也可用环境变量兜底：VLM_KEY_ZHIPU / VLM_KEY_QWEN / VLM_KEY_DOUBAO / VLM_KEY_DEEPSEEK / VLM_KEY_OPENAI"
+  ],
+  "zhipu": {
+    "key": "",
+    "model": "glm-4.6v-flash",
+    "_note": "智谱 GLM · open.bigmodel.cn · 有免费档，注册最快，推荐先试这家"
+  },
+  "qwen": {
+    "key": "",
+    "model": "qwen3-vl-plus",
+    "_note": "阿里通义千问 · bailian.console.aliyun.com"
+  },
+  "doubao": {
+    "key": "",
+    "model": "doubao-seed-1-6-vision-250815",
+    "_note": "字节豆包（火山方舟） · console.volcengine.com/ark · 注意 model 处需填「接入点 ID」而非模型名"
+  },
+  "deepseek": {
+    "key": "",
+    "model": "deepseek-v4-flash-vision-exp",
+    "_note": "DeepSeek V4 Flash Vision · platform.deepseek.com · 实验版，单图上限 384 token，长题会看不清"
+  },
+  "kimi": {
+    "key": "",
+    "model": "kimi-k3",
+    "_note": "Kimi（月之暗面） · platform.moonshot.cn · 原生视觉，仅 base64 传图；按量付费无免费档"
+  },
+  "openai": {
+    "key": "",
+    "model": "gpt-4o",
+    "_note": "OpenAI · platform.openai.com · 国内直连不通，需自备代理/中转，把 endpoint 填成中转地址"
+  }
+}

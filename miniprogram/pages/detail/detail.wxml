@@ -1,0 +1,250 @@
+<import src="../../templates/nodes.wxml" />
+
+<view class="page detail-page" wx:if="{{item}}">
+
+  <!-- ============ 头部 ============ -->
+  <view class="head">
+    <view class="row between">
+      <view class="row gap12">
+        <text class="head-no">Q{{item.no}}</text>
+        <view class="score-badge sc-{{item.level}}">
+          {{item.score}}<text class="f22">/{{item.fullScore}}</text>
+        </view>
+        <view class="tag {{item.statusCls}}">{{item.statusText}}</view>
+      </view>
+      <text class="t3 f22">{{item.dueText}}</text>
+    </view>
+    <view class="head-sub">{{item.assignTitle}} · {{item.type}}</view>
+    <view class="head-gist" wx:if="{{item.gist}}">{{item.gist}}</view>
+  </view>
+
+  <!-- ============ 题干（没题干就不显示，别留个空栏） ============ -->
+  <view class="blk" wx:if="{{item.stem.length}}">
+    <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">题目</text></view>
+    <template wx:if="{{item.stem.length}}" is="richNodes" data="{{nodes: item.stem}}" />
+    <view wx:elif="{{item.origin && item.origin.photo}}" class="t3 f26">这道题**只搬了图、没识别文字** —— 题目就在下面的「原始照片」栏里（已展开）。</view>
+    <view wx:else class="t3 f26">这道题没搬到题干内容 —— 可能抓取时页面还没加载完，重新抓一次看看。</view>
+  </view>
+
+  <!-- ============ 我的答案（没内容就整块不显示） ============ -->
+  <view class="blk" wx:if="{{item.myAnswer.nodes.length}}">
+    <view class="blk-head">
+      <view class="blk-bar bar-mine"></view>
+      <text class="blk-title">我的答案</text>
+      <text class="blk-head-right" wx:if="{{item.myAnswer.photo}}">点图放大</text>
+    </view>
+    <template is="richNodes" data="{{nodes: item.myAnswer.nodes}}" />
+  </view>
+
+  <!-- ============ 正确答案（没有就不显示） ============ -->
+  <view class="blk" wx:if="{{item.rightAnswer.nodes.length || item.comment.text}}">
+    <view class="blk-head">
+      <view class="blk-bar bar-right"></view>
+      <text class="blk-title">正确答案</text>
+    </view>
+    <template wx:if="{{item.rightAnswer.nodes.length}}" is="richNodes" data="{{nodes: item.rightAnswer.nodes}}" />
+    <view wx:elif="{{item.comment && item.comment.text}}" class="t3 f26">教师未给出标准答案，请以批语与解析为准。</view>
+    <view wx:else class="t3 f26">这份作业没有标准答案（多半是老师还没批改）。</view>
+  </view>
+
+  <!-- ============ 教师批语 ============ -->
+  <view class="blk" wx:if="{{item.comment.text}}">
+    <view class="blk-head" bindtap="toggleComment">
+      <view class="blk-bar bar-teacher"></view>
+      <text class="blk-title">教师批语</text>
+      <text class="blk-head-right">{{commentOpen ? '收起 ⌃' : '展开 ⌄'}}</text>
+    </view>
+    <block wx:if="{{commentOpen}}">
+      <template is="richNodes" data="{{nodes: item.comment.nodes}}" />
+    </block>
+    <view wx:else class="t3 f26 clamp2">{{item.comment.text}}</view>
+  </view>
+
+  <!-- 没批语的题：说白了，别让人以为是程序坏了（纯搬运的题不显示 —— 那栏本来就空） -->
+  <view class="blk" wx:elif="{{!imgOnly}}">
+    <view class="blk-head">
+      <view class="blk-bar bar-teacher"></view>
+      <text class="blk-title">教师批语</text>
+    </view>
+    <view class="t3 f26">这份作业没有教师批语（没得分、没判词）—— 是学习通上原样如此，不是抓取漏了。
+手写解答已按原样搬进来，对照着看即可。</view>
+  </view>
+
+  <!-- ============ 我的疑惑（对 AI 批语的异议） ============ -->
+  <view class="blk">
+    <view class="blk-head">
+      <view class="blk-bar bar-doubt"></view>
+      <text class="blk-title">我的疑惑</text>
+      <text class="blk-head-right" bindtap="toggleDoubtEdit">{{doubtEditing ? '收起 ⌃' : '＋ 标记'}}</text>
+    </view>
+    <view class="hint">批语是 AI 判的，可能出错（比如把手写 σ 认成 6 再批「符号写错」）。不服就记下来——它不影响订正和解锁，只是你的存疑记录。</view>
+
+    <view class="doubt" wx:for="{{doubtsView}}" wx:key="id" wx:for-item="d">
+      <view class="doubt-head">
+        <view class="doubt-tag">{{d.tagLabel}}</view>
+        <view class="doubt-time" wx:if="{{d.timeText}}">{{d.timeText}}</view>
+        <view class="doubt-del" catchtap="removeDoubt" data-id="{{d.id}}">✕</view>
+      </view>
+      <view class="doubt-text" wx:if="{{d.text}}">{{d.text}}</view>
+    </view>
+    <view class="t3 f24" wx:if="{{!doubtsView.length && !doubtEditing}}">还没标记过。对批语有疑问，点右上「＋ 标记」。</view>
+
+    <view class="doubt-edit" wx:if="{{doubtEditing}}">
+      <view class="row wrap gap8">
+        <view
+          class="chip {{doubtTag === d.key ? 'chip-on' : ''}}"
+          wx:for="{{doubtTags}}"
+          wx:for-item="d"
+          wx:key="key"
+          bindtap="pickDoubtTag"
+          data-key="{{d.key}}"
+        >{{d.label}}</view>
+      </view>
+      <textarea
+        class="ta ta-sm mt12"
+        value="{{doubtText}}"
+        bindinput="onDoubtInput"
+        placeholder="补充说明（选填）：批语哪里不对，或你的理由"
+        placeholder-class="ta-ph"
+        maxlength="300"
+        auto-height
+        show-confirm-bar="{{false}}"
+      />
+      <view class="btn btn-primary btn-sm btn-block mt12" bindtap="saveDoubt">记下这条疑惑</view>
+    </view>
+  </view>
+
+  <!-- ============ 原始照片（拍照录入才有） ============ -->
+  <view class="blk" wx:if="{{item.origin && item.origin.photo}}">
+    <view class="blk-head" bindtap="toggleOrigin">
+      <view class="blk-bar bar-origin"></view>
+      <text class="blk-title">原始照片</text>
+      <text class="blk-head-right">{{originOpen ? '收起 ⌃' : '展开 ⌄'}}</text>
+    </view>
+    <view class="t3 f24" wx:if="{{!originOpen}}">{{item.stem ? '识别难免有错字，点开对照一下原件。' : '这道题的全部内容就是这张图。点开能看清细节。'}}</view>
+    <block wx:else>
+      <image class="origin-img" src="{{item.origin.photo}}" mode="widthFix" bindtap="previewOrigin" />
+      <view class="t3 f22 mt12">点图放大</view>
+    </block>
+  </view>
+
+  <view class="divider-dash"></view>
+
+  <!-- ============ 我的订正（已提交） ============ -->
+  <view class="blk" wx:if="{{unlocked}}">
+    <view class="blk-head">
+      <view class="blk-bar bar-done"></view>
+      <text class="blk-title">我的订正</text>
+      <text class="blk-head-right" bindtap="redoCorrection">重写</text>
+    </view>
+    <view class="mine-text" wx:if="{{item.correction.text}}">{{item.correction.text}}</view>
+    <view class="mine-photos" wx:if="{{item.correction.photos.length}}">
+      <image
+        wx:for="{{item.correction.photos}}"
+        wx:for-item="p"
+        wx:key="*this"
+        class="mine-photo"
+        src="{{p}}"
+        mode="aspectFill"
+        bindtap="previewCorrection"
+        data-src="{{p}}"
+      />
+    </view>
+    <view class="t3 f22 mt12" wx:if="{{item.correctionTime}}">提交于 {{item.correctionTime}}</view>
+  </view>
+
+  <!-- ============ 错因分析：未解锁 ============ -->
+  <view class="blk lock" wx:if="{{!unlocked}}">
+    <view class="lock-ico">🔒</view>
+    <view class="lock-title">错因分析还没解锁</view>
+    <view class="lock-desc">
+      先自己写下这道题错在哪、正确该怎么走。想清楚再对照讲解，比直接看答案有用得多。
+    </view>
+    <view class="btn btn-primary btn-block mt24" bindtap="goCorrect">写下我的错因</view>
+  </view>
+
+  <!-- ============ 错因分析：已解锁 ============ -->
+  <block wx:else>
+    <view class="blk">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">错因分析</text>
+        <text class="blk-head-right">{{analysisSource === 'manual' ? '你标注的' : analysisSource === 'annotation' ? '批语归因' : '规则归因'}} · 可点选修改</text>
+      </view>
+
+      <view class="cause-list">
+        <view
+          class="cause {{c.on ? 'cause-on' : ''}}"
+          wx:for="{{allCauses}}"
+          wx:key="code"
+          bindtap="toggleCause"
+          data-code="{{c.code}}"
+        >
+          <view class="cause-dot"></view>
+          <view class="flex1">
+            <view class="cause-name">{{c.name}}</view>
+            <view class="cause-remedy">{{c.remedy}}</view>
+          </view>
+          <view class="cause-check">{{c.on ? '✓' : ''}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 逐条证据 -->
+    <view class="blk" wx:if="{{causes.length}}">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">具体依据</text></view>
+      <view class="ev" wx:for="{{causes}}" wx:key="code">
+        <view class="ev-code">{{c.code}} · {{c.confidence >= 1 ? '确定' : '推测'}}</view>
+        <view class="ev-text">{{c.detail}}</view>
+        <view class="ev-src" wx:if="{{c.evidence}}">来源：{{c.evidence}}</view>
+      </view>
+    </view>
+
+    <!-- 下一步 -->
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">怎么补</text></view>
+      <view class="advice">{{advice}}</view>
+      <view class="btn btn-primary btn-block mt24" bindtap="goTrain">去做针对性训练</view>
+    </view>
+  </block>
+
+  <!-- ============ 知识点 ============ -->
+  <view class="blk">
+    <view class="blk-head">
+      <view class="blk-bar"></view>
+      <text class="blk-title">知识点</text>
+      <text class="blk-head-right" bindtap="toggleKpEdit">{{kpEditing ? '完成' : '调整'}}</text>
+    </view>
+    <view class="row wrap">
+      <view class="tag tag-brand" wx:for="{{item.kpNames}}" wx:key="*this">{{item}}</view>
+      <view class="t3 f26" wx:if="{{!item.kpNames.length}}">还没打标签</view>
+    </view>
+    <view class="kp-edit" wx:if="{{kpEditing}}">
+      <view
+        class="kp-node {{k.on ? 'kp-on' : ''}}"
+        wx:for="{{kpOptions}}"
+        wx:key="id"
+        bindtap="toggleKp"
+        data-id="{{k.id}}"
+        style="padding-left:{{k.depth * 28 + 20}}rpx"
+      >
+        <text class="kp-check">{{k.on ? '✓' : '○'}}</text>{{k.name}}
+      </view>
+    </view>
+  </view>
+
+</view>
+
+<!-- ============ 未找到 ============ -->
+<view class="card empty" wx:if="{{notFound}}">
+  <view class="empty-ico">🤔</view>
+  <view class="empty-txt">找不到这道题</view>
+  <view class="empty-sub">它可能已被删除</view>
+</view>
+
+<!-- ============ 底部操作 ============ -->
+<view class="foot" wx:if="{{item}}">
+  <view class="btn btn-line flex1" bindtap="goList">错题本</view>
+  <view class="btn btn-primary flex1" wx:if="{{!unlocked}}" bindtap="goCorrect">写下错在哪</view>
+  <view class="btn btn-primary flex1" wx:else bindtap="goTrain">巩固训练</view>
+</view>

@@ -1,0 +1,92 @@
+/* ============ 总览格 ============ */
+.grid {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+.g-cell {
+  flex: 1;
+  background: #fff;
+  border-radius: 18rpx;
+  padding: 26rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 12rpx rgba(22, 24, 29, 0.04);
+}
+.g-n {
+  font-size: 44rpx;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--t1);
+}
+.g-n.warn { color: var(--warn); }
+.g-n.ok { color: var(--ok); }
+.g-n.bad { color: var(--bad); }
+.g-l { font-size: 22rpx; color: var(--t3); margin-top: 8rpx; }
+
+/* ============ 条形统计 ============ */
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 14rpx 0;
+}
+.stat-lbl {
+  width: 190rpx;
+  font-size: 25rpx;
+  color: var(--t2);
+  flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.stat-n {
+  width: 56rpx;
+  font-size: 25rpx;
+  font-weight: 600;
+  color: var(--t1);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bar-in-new { background: #f59e0b; }
+.bar-in-analyzed { background: #2b6cff; }
+.bar-in-training { background: #7c3aed; }
+.bar-in-mastered { background: #16a34a; }
+.bar-cause { background: #dc2626; }
+.bar-weak { background: #dc2626; }
+.bar-mid { background: #f59e0b; }
+.bar-ok { background: #16a34a; }
+
+.bar-bad { background: #dc2626; }
+
+/* ============ 知识点 ============ */
+.kp-row {
+  padding: 16rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+}
+.kp-row:last-child { border-bottom: none; }
+.kp-name {
+  font-size: 27rpx;
+  color: var(--t1);
+  font-weight: 500;
+}
+
+/* ============ 建议 ============ */
+.advice {
+  font-size: 27rpx;
+  line-height: 1.8;
+  color: var(--t1);
+  background: #f7f9fc;
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+}
+
+.foot-note {
+  text-align: center;
+  font-size: 22rpx;
+  color: #b9bfc9;
+  line-height: 1.8;
+  padding: 30rpx 20rpx 20rpx;
+}

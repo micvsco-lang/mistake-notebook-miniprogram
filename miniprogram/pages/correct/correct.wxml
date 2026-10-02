@@ -1,0 +1,133 @@
+<import src="../../templates/nodes.wxml" />
+
+<!-- ==================== 编辑态 ==================== -->
+<block wx:if="{{!done}}">
+  <view class="page edit-page" wx:if="{{item}}">
+
+    <view class="blk">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">Q{{item.no}} · 题干</text>
+        <text class="blk-head-right">得分 {{item.score}}/{{item.fullScore}}</text>
+      </view>
+      <template is="richNodes" data="{{nodes: item.stem}}" />
+    </view>
+
+    <view class="blk" wx:if="{{item.myAnswer.nodes.length}}">
+      <view class="blk-head">
+        <view class="blk-bar bar-mine"></view>
+        <text class="blk-title">我当时写的</text>
+        <text class="blk-head-right">点图放大</text>
+      </view>
+      <template is="richNodes" data="{{nodes: item.myAnswer.nodes}}" />
+    </view>
+
+    <view class="blk">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">先自己写：我错在哪</text>
+      </view>
+
+      <view class="hint">照着这几问写，比随便写两句有用得多。点一下就能填进去。</view>
+      <view class="prompts">
+        <view class="prompt" wx:for="{{prompts}}" wx:key="*this" bindtap="usePrompt" data-p="{{item}}">
+          {{item}}
+        </view>
+      </view>
+
+      <textarea
+        class="ta"
+        value="{{text}}"
+        bindinput="onInput"
+        placeholder="例如：我只证了 1 是下界，没有验证「任意小于 1 的数都不是下界」，漏掉了确界定义里的最小性那一步…"
+        placeholder-class="ta-ph"
+        maxlength="-1"
+        auto-height
+        show-confirm-bar="{{false}}"
+        cursor-spacing="40"
+      />
+
+      <view class="photo-grid" wx:if="{{photos.length}}">
+        <view class="photo-item" wx:for="{{photos}}" wx:key="*this">
+          <image class="photo-img" src="{{item}}" mode="aspectFill" bindtap="previewPhoto" data-src="{{item}}" />
+          <view class="photo-del" catchtap="delPhoto" data-i="{{index}}">✕</view>
+        </view>
+      </view>
+
+      <view class="btn btn-line btn-sm mt16" bindtap="addPhoto">＋ 加一张订正稿照片</view>
+    </view>
+
+    <view class="note">
+      <text>提交后会解锁这道题的错因分析和针对性训练。先写完再看，效果最好。</text>
+    </view>
+
+  </view>
+
+  <view class="foot" wx:if="{{item}}">
+    <view class="btn btn-primary btn-block {{submitting ? 'disabled' : ''}}" bindtap="submit">
+      {{submitting ? '提交中…' : '提交订正，解锁分析'}}
+    </view>
+  </view>
+</block>
+
+<!-- ==================== 完成态 ==================== -->
+<block wx:else>
+  <view class="page">
+    <view class="done-head">
+      <view class="done-ico">✓</view>
+      <view class="done-title">错因分析已解锁</view>
+      <view class="done-sub">对照下面的归因，看看和你自己写的是否一致</view>
+    </view>
+
+    <view class="blk" wx:if="{{item.correction.text}}">
+      <view class="blk-head">
+        <view class="blk-bar bar-done"></view>
+        <text class="blk-title">我写的</text>
+        <text class="blk-head-right" bindtap="editAgain">修改</text>
+      </view>
+      <view class="mine-text">{{item.correction.text}}</view>
+      <view class="photo-grid" wx:if="{{item.correction.photos.length}}">
+        <view class="photo-item" wx:for="{{item.correction.photos}}" wx:for-item="p" wx:key="*this">
+          <image class="photo-img" src="{{p}}" mode="aspectFill" bindtap="previewPhoto" data-src="{{p}}" />
+        </view>
+      </view>
+    </view>
+
+    <view class="blk" wx:if="{{analysis && analysis.causes.length}}">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">系统归因</text>
+        <text class="blk-head-right">可在详情页改判</text>
+      </view>
+      <view class="cause-row" wx:for="{{analysis.causes}}" wx:key="code">
+        <view class="cause-code">{{item.code}}</view>
+        <view class="flex1">
+          <view class="cause-text">{{item.detail}}</view>
+          <view class="cause-ev" wx:if="{{item.evidence}}">{{item.evidence}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">怎么补</text>
+      </view>
+      <view class="advice">{{analysis.advice}}</view>
+    </view>
+
+    <view class="note note-warn" wx:if="{{analysis && !analysis.causes.length}}">
+      <text>这道题没有识别出明显错因，可能是批语里没有线索。你可以在详情页手动标注。</text>
+    </view>
+  </view>
+
+  <view class="foot">
+    <view class="btn btn-line flex1" bindtap="goDetail">看完整详情</view>
+    <view class="btn btn-primary flex1" bindtap="goTrain">去做针对性训练</view>
+  </view>
+</block>
+
+<view class="card empty" wx:if="{{notFound}}">
+  <view class="empty-ico">🤔</view>
+  <view class="empty-txt">找不到这道题</view>
+</view>

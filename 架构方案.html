@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>错题订正小程序 · 架构方案</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#151a21; --ink2:#5b6472; --ink3:#8b94a3;
+    --line:#e6e9ef; --blue:#2b5cff; --blue-bg:#eef3ff; --orange:#f4620d; --orange-bg:#fff3ea;
+    --green:#0e9f6e; --green-bg:#e8f8f1; --red:#e02424; --red-bg:#fdeeee; --purple:#7c3aed; --purple-bg:#f4efff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:14.5px;line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 28px 80px}
+
+  /* ---------- header ---------- */
+  .hero{background:linear-gradient(135deg,#1e2a4a 0%,#2b5cff 100%);border-radius:18px;padding:36px 38px;color:#fff;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.07)}
+  .hero h1{margin:0 0 6px;font-size:27px;letter-spacing:-.3px}
+  .hero .sub{opacity:.82;font-size:14px}
+  .hero .tags{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 13px;font-size:12.5px}
+
+  /* ---------- section ---------- */
+  section{margin-top:34px}
+  h2{font-size:19px;margin:0 0 4px;letter-spacing:-.2px;display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;
+    background:var(--blue);color:#fff;font-size:13px;font-weight:600;flex:none}
+  h2+.lead{color:var(--ink2);margin:6px 0 16px;font-size:13.5px}
+  h3{font-size:15px;margin:22px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+  .card+.card{margin-top:14px}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0;padding-left:20px}
+  li{margin:4px 0}
+  code{background:#eef1f6;border-radius:5px;padding:1px 6px;font-size:12.5px;
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;color:#1f2b45}
+  .mono{font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:12.5px}
+
+  /* ---------- tables ---------- */
+  table{width:100%;border-collapse:collapse;font-size:13.2px;margin:10px 0}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#fafbfd;font-weight:600;color:var(--ink2);font-size:12.5px;letter-spacing:.02em}
+  tr:last-child td{border-bottom:none}
+  table.compact td,table.compact th{padding:7px 10px}
+
+  /* ---------- flow ---------- */
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:14px 0}
+  .step{flex:1 1 150px;min-width:140px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;position:relative}
+  .step .k{font-size:11.5px;font-weight:700;color:var(--blue);letter-spacing:.04em}
+  .step .t{font-weight:600;margin:4px 0 4px;font-size:14px}
+  .step .d{color:var(--ink2);font-size:12.5px;line-height:1.6}
+  .step.acc{border-color:#ffd9c0;background:var(--orange-bg)}
+  .step.acc .k{color:var(--orange)}
+  .arrow{align-self:center;color:var(--ink3);font-size:17px;flex:none}
+
+  /* ---------- layer stack ---------- */
+  .stack{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#fff}
+  .layer{padding:13px 18px;border-bottom:1px solid var(--line);display:flex;gap:16px;align-items:flex-start}
+  .layer:last-child{border-bottom:none}
+  .layer .lname{flex:none;width:104px;font-weight:600;font-size:13px}
+  .layer .lbody{flex:1;font-size:13px;color:var(--ink2)}
+  .layer .lbody b{color:var(--ink);font-weight:600}
+  .l1{background:var(--blue-bg)} .l2{background:var(--purple-bg)}
+  .l3{background:var(--green-bg)} .l4{background:#fbfbfd}
+
+  /* ---------- tree ---------- */
+  .tree{background:#fbfcfe;border:1px solid var(--line);border-radius:12px;padding:16px 20px;
+    font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:12.8px;line-height:1.85;white-space:pre;overflow-x:auto;color:#26303f}
+  .tree .c{color:var(--ink3)}
+  .tree .b{color:var(--blue);font-weight:600}
+  .tree .o{color:var(--orange);font-weight:600}
+
+  /* ---------- pills ---------- */
+  .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .p-blue{background:var(--blue-bg);color:var(--blue)}
+  .p-orange{background:var(--orange-bg);color:var(--orange)}
+  .p-green{background:var(--green-bg);color:var(--green)}
+  .p-red{background:var(--red-bg);color:var(--red)}
+  .p-purple{background:var(--purple-bg);color:var(--purple)}
+  .p-gray{background:#eef1f6;color:var(--ink2)}
+
+  .note{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;font-size:13.2px}
+  .warn{border-left:3px solid var(--red);background:var(--red-bg);border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;font-size:13.2px}
+  .ok{border-left:3px solid var(--green);background:var(--green-bg);border-radius:0 10px 10px 0;padding:12px 16px;margin:12px 0;font-size:13.2px}
+  .warn b,.note b,.ok b{font-weight:700}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}.hero{padding:26px 22px}.hero h1{font-size:22px}}
+
+  .kv{display:grid;grid-template-columns:96px 1fr;gap:6px 14px;font-size:13.2px}
+  .kv .k{color:var(--ink3)}
+  footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>错题订正 · 知识强化小程序</h1>
+    <div class="sub">把学习通里的作业，变成可复用的错题资产 —— 收录 → 订正 → 归因 → 变式巩固</div>
+    <div class="tags">
+      <span class="tag">原生小程序 + 微信云开发</span>
+      <span class="tag">多模态 AI 解析</span>
+      <span class="tag">艾宾浩斯复习</span>
+      <span class="tag">分享裂变获客</span>
+    </div>
+  </div>
+
+  <!-- ============ 0 ============ -->
+  <section id="positioning">
+    <h2><span class="n">0</span>产品定位与三条不可逾越的边界</h2>
+    <p class="lead">先定边界，再谈架构 —— 这个品类最容易在审核上翻车。</p>
+    <div class="two">
+      <div class="card">
+        <h3 style="margin-top:0">我们要做的是</h3>
+        <p><b>一个「错题资产化」工具</b>：学生在学习通写完作业后，把做错的题收进来，系统帮他看清<b>为什么错</b>、并生成<b>同源变式题</b>练到掌握。</p>
+        <ul>
+          <li>输入：学习通作业（收件箱 / 作业页）</li>
+          <li>加工：结构化 → 归因 → 映射知识点</li>
+          <li>输出：可复习的错题本 + 训练题 + 掌握度</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">我们<b>绝不</b>做的是</h3>
+        <ul>
+          <li><b>不做「拍照即出答案」</b> —— 会被判定为代做 / 作弊工具，审核直接拒，且随时下架</li>
+          <li><b>不代写作业、不直接给最终解答</b> —— 解析必须在用户<b>先行作答</b>之后才解锁</li>
+          <li><b>不抓取学习通数据</b> —— 不逆向、不代登录、不批量拉取他人内容</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warn">
+      <b>这是本方案最重要的产品决策。</b>同类产品被下架的主因不是技术，而是<b>定位越界</b>。我们的功能顺序必须是：
+      <b>先记录「我错了」→ 再分析「为什么错」→ 最后才是「怎么练」</b>。答案永远不能是第一步。
+      这个顺序同时决定了下面所有数据模型里的 <code>status</code> 状态机。
+    </div>
+  </section>
+
+  <!-- ============ 1 ============ -->
+  <section id="loop">
+    <h2><span class="n">1</span>核心闭环（一条主链路，五个状态）</h2>
+    <p class="lead">每一步都对应一个云函数、一个页面、一次状态流转。闭环闭合在「掌握度」上，而不是「看完解析」。</p>
+
+    <div class="flow">
+      <div class="step acc"><div class="k">STEP 1</div><div class="t">收录</div><div class="d">截图 / 复制文本 / 拍照 → AI 结构化出题干、我的答案、正确答案、所属课程与作业名</div></div>
+      <div class="arrow">→</div>
+      <div class="step acc"><div class="k">STEP 2</div><div class="t">订正</div><div class="d">对照正确答案重做一遍，写下自己的理解。此步之后解析才解锁</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">STEP 3</div><div class="t">错因分析</div><div class="d">AI 归因到六大错因之一 + 映射知识点 + 给出「你缺的是哪一步」</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">STEP 4</div><div class="t">巩固训练</div><div class="d">按错因类型生成变式题（换数值/换情境/换问法），作答后即时批改</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">STEP 5</div><div class="t">知识强化</div><div class="d">掌握度更新 → 艾宾浩斯节点排期 → 订阅消息提醒 → 周报</div></div>
+    </div>
+
+    <h3>状态机（<code>mistakes.status</code>）</h3>
+    <table class="compact">
+      <tr><th>状态</th><th>含义</th><th>触发动作</th><th>下一状态</th></tr>
+      <tr><td><span class="pill p-orange">new</span></td><td>刚收录，未订正</td><td>用户完成订正（写下订正过程）</td><td>correcting → analyzed</td></tr>
+      <tr><td><span class="pill p-blue">analyzed</span></td><td>已归因，知道错在哪</td><td>完成一轮变式训练且全对</td><td>training</td></tr>
+      <tr><td><span class="pill p-purple">training</span></td><td>训练中，掌握度累积</td><td>连续 2 轮跨天训练全对</td><td>mastered</td></tr>
+      <tr><td><span class="pill p-green">mastered</span></td><td>已掌握，进入低频复习</td><td>复习失败 1 次</td><td>回退 training</td></tr>
+    </table>
+    <div class="note">
+      <b>状态机是整个产品的骨架。</b>首页的「今日待订正」、订阅消息的触发点、周报的数字，全部由它派生。
+      不要用多个布尔字段（<code>isCorrected</code>/<code>isMastered</code>）来拼，那会让查询和提醒逻辑失控。
+    </div>
+  </section>
+
+  <!-- ============ 2 ============ -->
+  <section id="tech">
+    <h2><span class="n">2</span>技术架构（原生 + 云开发）</h2>
+    <p class="lead">选型理由只有一条：把「服务器、登录鉴权、HTTPS 证书、域名备案」这四件最耗时的事全部省掉，直接换取上线速度。</p>
+
+    <div class="stack">
+      <div class="layer l1">
+        <div class="lname">表现层</div>
+        <div class="lbody"><b>小程序原生</b>（WXML / WXSS / JS）· UI 基础组件用 <b>TDesign 小程序版</b>（腾讯官方，与云开发同生态，省掉自研组件成本）· <b>主包 + 3 个分包</b>控制冷启动</div>
+      </div>
+      <div class="layer l2">
+        <div class="lname">能力层</div>
+        <div class="lbody"><b>云函数（Node.js 18）</b> —— 所有 AI 调用、写入校验、配额扣减、内容安全都收口在这一层。<b>小程序端不持有任何密钥</b></div>
+      </div>
+      <div class="layer l3">
+        <div class="lname">数据层</div>
+        <div class="lbody"><b>云数据库</b>（文档型，天然适配错题这种嵌套结构）· <b>云存储</b>（题目截图，走 CDN）· 两者都能被云函数以管理员身份操作，绕过客户端权限</div>
+      </div>
+      <div class="layer l4">
+        <div class="lname">AI 层</div>
+        <div class="lbody"><b>多模态大模型</b>（读图直接出结构化题目，省掉独立 OCR 这一层）· 模型调用凭证只存在云函数环境变量里</div>
+      </div>
+    </div>
+
+    <h3>为什么不用 Taro / uni-app</h3>
+    <p>你们只投微信一个渠道，多端框架立刻变成净负担：多一层构建链、多一类“编译后行为不一致”的 bug、真机预览链路变长。<b>等真的要多端时再迁移，错题数据都在云上，迁移成本主要在页面层，可控。</b></p>
+
+    <h3>成本预期（早期量级）</h3>
+    <table class="compact">
+      <tr><th>项</th><th>说明</th><th>量级</th></tr>
+      <tr><td>云开发基础版</td><td>数据库/存储/云函数调用额度</td><td>免费额度内可撑过冷启动期</td></tr>
+      <tr><td>AI 调用</td><td>一次收录 + 归因 + 出题 ≈ 3 次调用</td><td>这是<b>唯一随用户量线性增长的成本</b>，必须做配额</td></tr>
+      <tr><td>云存储</td><td>题目截图，压缩后约 80–150 KB/张</td><td>低</td></tr>
+    </table>
+    <div class="warn"><b>AI 成本必须有硬闸门。</b>上线第一天就要有：单用户每日收录上限、图片入库前压缩、失败重试次数上限。否则一个刷接口的用户就能把预算烧掉。</div>
+  </section>
+
+  <!-- ============ 3 ============ -->
+  <section id="ingest">
+    <h2><span class="n">3</span>学习通数据怎么进来（本产品的关键工程问题）</h2>
+    <p class="lead">你要求「作业内容从学习通收件箱找」。这里必须先讲清楚<b>技术上能与不能</b>，再给方案。</p>
+
+    <h3>先排除不可行的路</h3>
+    <table>
+      <tr><th>方案</th><th>可行性</th><th>原因</th></tr>
+      <tr>
+        <td>小程序内嵌 <code>web-view</code> 打开学习通</td>
+        <td><span class="pill p-red">不可行</span></td>
+        <td>web-view 要求把 <code>chaoxing.com</code> 配到小程序「业务域名」，而配置需要通过该域名的文件校验 —— <b>你无法在学习通服务器上放校验文件</b>，这条路直接被封死</td>
+      </tr>
+      <tr>
+        <td>小程序后端代登录学习通、拉取收件箱</td>
+        <td><span class="pill p-red">不可做</span></td>
+        <td>要保存用户学习通账密或会话票据，属于<b>合规高危</b>；且涉及抓取第三方平台数据。审核与法务两头都过不去</td>
+      </tr>
+      <tr>
+        <td>用学习通开放接口</td>
+        <td><span class="pill p-red">不存在</span></td>
+        <td>学习通未向第三方个人开发者开放作业类接口</td>
+      </tr>
+    </table>
+
+    <h3>可落地的三条路（按投入排序）</h3>
+    <div class="two">
+      <div class="card">
+        <h3 style="margin-top:0"><span class="pill p-green">MVP</span> 路径 A · 剪贴板导入</h3>
+        <p><b>用户体验</b>：在电脑上看学习通作业页 → 全选复制 → 打开小程序 → 点「粘贴导入」。</p>
+        <p><b>实现</b>：<code>wx.getClipboardData()</code> 拿到文本 → 云函数 <code>importText</code> → 大模型切成结构化题目数组。</p>
+        <p><b>优点</b>：零依赖、零合规风险、<b>一天就能做出来</b>，且题目文本质量比截图更高（OCR 不会错）。</p>
+        <p><b>缺点</b>：需要用户在电脑上操作一次复制。</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0"><span class="pill p-green">MVP</span> 路径 B · 截图 / 拍照</h3>
+        <p><b>用户体验</b>：<code>wx.chooseMedia</code> 选一张或多张作业截图。</p>
+        <p><b>实现</b>：图片压缩 → 云存储 → 云函数把图片 URL 交给<b>多模态模型</b>，直接返回结构化题目（题干 / 我的答案 / 正确答案 / 题号）。</p>
+        <p><b>优点</b>：手机端也能用，数学公式、图表、矩阵都能识别。</p>
+        <p><b>缺点</b>：调用更贵，需要严格压缩 + 单用户日配额。</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0"><span class="pill p-purple">V2</span> 路径 C · 电脑端「学习通导入助手」</h3>
+      <p><b>这是体验最好的一条，而且你们已经有一半资产了</b> —— 现在这套本地驱动脚本，已经能连上带调试端口的浏览器、读取学习通已登录页面、逐帧解析 DOM。</p>
+      <p><b>做法</b>：电脑端把用户<b>自己账号</b>下的作业页解析成结构化 JSON → 生成一个短链 / 二维码（数据存在云上、限时有效、用后即焚）→ 小程序扫码领取。</p>
+      <div class="ok">
+        <b>合规红线（务必守住）</b>：只处理<b>用户本人已登录、本人账号下</b>的页面；数据<b>仅用户可用</b>；不批量、不代理他人账号、不落第三方。本质上是「帮用户把自己看到的内容整理成结构化格式」，而不是「替你抓取平台数据」。
+      </div>
+      <p><b>建议排期</b>：不要放进 MVP。先用 A+B 验证「用户是否真的愿意收录错题」这个核心假设 —— 如果连手动导入都不愿意用，自动导入也救不了留存。</p>
+    </div>
+
+    <div class="note">
+      <b>关于你收件箱里的那几条作业</b>（高数分析 <code>HW1 09-21</code>、<code>新建作业20260923100409</code>、线代<code>第1次作业-2026-09-22</code>）：
+      这些正好构成<b>首批种子数据</b>。建议用它们手工跑通一遍「导入 → 结构化 → 归因 → 出题」全链路，把 AI 提示词调到可用，再放量。
+    </div>
+  </section>
+
+  <!-- ============ 4 ============ -->
+  <section id="pages">
+    <h2><span class="n">4</span>页面树与分包策略</h2>
+    <p class="lead">主包只放 tabBar 与核心流程，必须压在 2 MB 以内 —— 这直接决定冷启动速度，而冷启动速度直接影响次日留存。</p>
+
+    <div class="tree"><span class="b">主包（目标 &lt; 1.2 MB）</span>
+├── pages/index/index          <span class="c">首页：今日待订正 / 快速收录入口 / 掌握度概览</span>
+├── pages/capture/capture      <span class="c">收录：粘贴导入 · 截图导入 · 手动录入</span>
+├── pages/review/review        <span class="c">订正：对照答案重做 + 写订正过程</span>
+├── pages/book/book            <span class="c">错题本：按课程 / 知识点 / 错因 / 状态筛选</span>
+└── pages/mine/mine            <span class="c">我的：设置、配额、订阅管理</span>
+
+<span class="b">分包 A · packageBook</span>  <span class="c">（错题深加工，进入率最高，独立分包避免拖慢主包）</span>
+├── pages/detail/detail        <span class="c">错题详情：题干 / 我的答案 / 正确答案 / 订正记录</span>
+├── pages/cause/cause          <span class="c">错因分析报告：归因 + 知识点 + 讲解</span>
+├── pages/drill/drill          <span class="c">变式训练：逐题作答 + 即时批改</span>
+└── pages/history/history      <span class="c">训练历史与进步曲线</span>
+
+<span class="b">分包 B · packageKnow</span>  <span class="c">（知识强化，中期留存的核心）</span>
+├── pages/map/map              <span class="c">知识点掌握度热力图</span>
+├── pages/plan/plan            <span class="c">艾宾浩斯复习计划</span>
+└── pages/node/node            <span class="c">单个知识点：关联错题 + 专项训练</span>
+
+<span class="b">分包 C · packageSocial</span>  <span class="c">（获客与召回，按需加载）</span>
+├── pages/report/report        <span class="c">周报 / 月报（分享卡的落地页）</span>
+├── pages/team/team            <span class="c">组队打卡</span>
+└── pages/poster/poster        <span class="c">错题海报生成</span></div>
+
+    <h3>分包的三条纪律</h3>
+    <ul>
+      <li><b>tabBar 页面只能放主包</b> —— 上面 5 个主包页面就是全部 tabBar 及核心流程，不能再多。</li>
+      <li><b>分包之间不互相跳转</b>，只回跳主包。否则会形成隐式依赖，后期拆包会崩。</li>
+      <li><b>公共代码放独立分包</b>（<code>subpackageCommon</code>）或主包，别在分包里各抄一份数学公式渲染器 —— 那是体积失控的头号原因。</li>
+    </ul>
+    <div class="note"><b>数学公式渲染</b>是这类产品特有的坑：题干里的 LaTeX 必须渲染。方案用 <code>towxml</code> 或自建 WXSS 渲染层，<b>只放主包一份</b>，分包引用。别用 web-view 渲染公式，会出现高度塌陷。</div>
+  </section>
+
+  <!-- ============ 5 ============ -->
+  <section id="data">
+    <h2><span class="n">5</span>数据模型与权限矩阵</h2>
+    <p class="lead">云开发里，<b>权限配置比表结构更重要</b>。下面每个集合都标了权限档位，照抄即可。</p>
+
+    <h3>集合清单</h3>
+    <table>
+      <tr><th>集合</th><th>作用</th><th>关键字段</th><th>权限</th></tr>
+      <tr>
+        <td class="mono">mistakes</td>
+        <td><b>核心表</b>：错题</td>
+        <td class="mono">subjectId, sourceName, stemText, stemImages[], myAnswer, correctAnswer, knowledgePoints[], causeCategory, causeDetail, status, reviewStage</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">drills</td>
+        <td>AI 生成的变式训练题</td>
+        <td class="mono">mistakeId, kpId, stem, options[], answer, difficulty, genBy</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">drill_records</td>
+        <td>训练作答记录</td>
+        <td class="mono">drillId, myAnswer, isCorrect, durationMs, createdAt</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">review_schedule</td>
+        <td>艾宾浩斯复习排期</td>
+        <td class="mono">mistakeId, dueAt, stage, lastResult</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">subjects</td>
+        <td>课程（对应学习通课程名）</td>
+        <td class="mono">name, semester, kpTreeId</td>
+        <td><span class="pill p-blue">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">knowledge_points</td>
+        <td><b>公共知识树</b>（高数/线代预置）</td>
+        <td class="mono">name, parentId, subjectId, level, order</td>
+        <td><span class="pill p-green">所有用户可读</span></td>
+      </tr>
+      <tr>
+        <td class="mono">mastery</td>
+        <td>用户对知识点的掌握度</td>
+        <td class="mono">kpId, score(0-100), correctStreak, updatedAt</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">ai_tasks</td>
+        <td>异步 AI 任务队列（解析/归因/出题）</td>
+        <td class="mono">type, payload, status, retry, result</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">quotas</td>
+        <td>用户配额与用量</td>
+        <td class="mono">date, importUsed, drillUsed, aiTokens</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">stats_daily</td>
+        <td>每日统计（周报/分享的数据源）</td>
+        <td class="mono">date, added, corrected, mastered, acc</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+      <tr>
+        <td class="mono">share_records</td>
+        <td>分享裂变追踪</td>
+        <td class="mono">scene, inviterOpenid, inviteeOpenid, reward</td>
+        <td><span class="pill p-red">仅云函数</span></td>
+      </tr>
+    </table>
+
+    <div class="warn">
+      <b>注意这里几乎全是「仅云函数」。</b>云开发的四种权限档位里，我刻意不用「仅创建者可读写」——<br>
+      <b>原因</b>：<code>mistakes</code> 里的 <code>causeCategory</code>、<code>mastery.score</code>、<code>quotas</code> 这些字段一旦允许客户端直写，用户就能改自己的掌握度、刷掉 AI 配额。<br>
+      <b>做法</b>：权限设为「所有用户不可读写」，读写全部经云函数。云函数默认以<b>管理员身份</b>运行，不受权限档位限制，同时能在函数里强制注入 <code>_openid</code> 做数据隔离。
+    </div>
+
+    <h3><code>mistakes</code> 关键字段设计</h3>
+    <div class="card">
+      <div class="kv">
+        <div class="k">_openid</div><div>云函数写入时注入，用户不可伪造。所有查询强制带此条件</div>
+        <div class="k">sourceType</div><div><span class="pill p-gray">clipboard</span> <span class="pill p-gray">screenshot</span> <span class="pill p-gray">manual</span> <span class="pill p-gray">assistant</span></div>
+        <div class="k">sourceName</div><div>如「高数分析 HW2 0923」——用于按作业维度聚合复习，这是学生真实的心智单位</div>
+        <div class="k">stemText / stemImages</div><div>题干文本与原图<b>都保留</b>：文本供 AI 与检索用，原图供核对公式</div>
+        <div class="k">myAnswer</div><div><b>必填</b>。这是「先订正」原则的数据体现 —— 没有自己的答案，不能发起归因</div>
+        <div class="k">causeCategory</div><div>六大错因之一（见第 7 节），<b>由 AI 写、用户可修正</b>（修正走云函数，记录 original + corrected）</div>
+        <div class="k">status</div><div>状态机字段，见第 1 节</div>
+        <div class="k">reviewStage</div><div>艾宾浩斯第几轮（0→1天→2天→4天→7天→15天→30天）</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6 ============ -->
+  <section id="funcs">
+    <h2><span class="n">6</span>云函数清单</h2>
+    <p class="lead">共 12 个。每个都写明职责边界，避免后期堆成一个巨型函数。</p>
+    <table>
+      <tr><th>云函数</th><th>职责</th><th>入参 → 出参</th><th>备注</th></tr>
+      <tr><td class="mono">login</td><td>换取 openid、初始化用户与配额</td><td>— → {openid, quota}</td><td>云开发免登录鉴权，直接取 openid</td></tr>
+      <tr><td class="mono">importText</td><td>剪贴板/文本 → 结构化题目数组</td><td>{text, subjectHint} → {items[]}</td><td>调大模型；返回后<b>由用户勾选</b>要收哪些题</td></tr>
+      <tr><td class="mono">importImage</td><td>截图 → 结构化题目数组</td><td>{fileID[]} → {items[]}</td><td>多模态模型一次读图，<b>省掉独立 OCR 层</b></td></tr>
+      <tr><td class="mono">saveMistakes</td><td>批量落库，注入 _openid</td><td>{items[]} → {ids[]}</td><td>落库前过内容安全检测</td></tr>
+      <tr><td class="mono">correctMistake</td><td>提交订正，流转状态</td><td>{id, correctProcess} → {ok, status}</td><td>校验 myAnswer 非空</td></tr>
+      <tr><td class="mono">analyzeCause</td><td><b>错因分析</b>：归因 + 映射知识点 + 讲解</td><td>{id} → {causeCategory, kps[], explain}</td><td>限定在预置知识树内选，避免 AI 编造知识点</td></tr>
+      <tr><td class="mono">genDrills</td><td><b>生成变式题</b>（按错因策略）</td><td>{id, count} → {drills[]}</td><td>写 <code>drills</code>，不直接回给前端复用</td></tr>
+      <tr><td class="mono">gradeDrill</td><td>批改训练作答（客观题本地判，主观题调 AI）</td><td>{drillId, answer} → {isCorrect, hint}</td><td>更新 <code>drill_records</code> 与掌握度</td></tr>
+      <tr><td class="mono">updateMastery</td><td>重算知识点掌握度</td><td>{kpId} → {score}</td><td>由 gradeDrill 触发，不进前端</td></tr>
+      <tr><td class="mono">planReview</td><td>生成/滚动艾宾浩斯排期</td><td>{mistakeId} → {dueAt}</td><td>配合定时触发器每日重排</td></tr>
+      <tr><td class="mono">pushReminder</td><td>发订阅消息（复习提醒/周报）</td><td>{type} → {sent}</td><td><b>必须用用户主动授权时拿到的 templateId 额度</b>，一次性订阅只能推一次</td></tr>
+      <tr><td class="mono">dailyStats</td><td>聚合当日统计，供周报与分享卡</td><td>— → {stats}</td><td>定时触发器，每天 23:30</td></tr>
+    </table>
+    <div class="note">
+      <b>为什么拆这么细</b>：云函数冷启动成本与包体积正相关。<code>analyzeCause</code> 和 <code>genDrills</code> 是两个被高频调用、又各自需要长提示词的重函数，混在一起会让每次调用都白付另一份冷启动开销。
+    </div>
+  </section>
+
+  <!-- ============ 7 ============ -->
+  <section id="ai">
+    <h2><span class="n">7</span>AI 设计：错因分类体系与出题策略</h2>
+    <p class="lead">这是产品的灵魂，也是与「普通错题本」拉开差距的地方。核心思路：<b>不同错因要用完全不同的巩固手段</b>。</p>
+
+    <h3>六大错因 → 对应巩固策略（映射关系就是产品壁垒）</h3>
+    <table>
+      <tr><th>错因</th><th>典型表现</th><th>AI 要输出什么</th><th>巩固策略</th></tr>
+      <tr>
+        <td><span class="pill p-red">知识性</span></td><td>概念混淆、公式记错、定理条件遗漏</td><td>指出缺失/记错的具体概念，给出正确定义</td><td>知识点讲解 + <b>基础题</b>（先补概念，别上难题）</td>
+      </tr>
+      <tr>
+        <td><span class="pill p-orange">方法性</span></td><td>方法选错、思路中断、没识别出题型</td><td>指出本题的<b>识别特征</b>与正确方法入口</td><td>同类题变式 + <b>方法归纳卡</b>（“看到 X 就用 Y”）</td>
+      </tr>
+      <tr>
+        <td><span class="pill p-purple">计算性</span></td><td>算错、符号错、代入错</td><td>定位到<b>具体哪一步</b>算错</td><td>计算专项 + 易错点清单（如分部积分符号）</td>
+      </tr>
+      <tr>
+        <td><span class="pill p-blue">审题性</span></td><td>看错条件、漏条件、理解偏差</td><td>还原“你理解成了什么” vs “题实际问什么”</td><td><b>审题清单训练</b>：划条件、标问题、写已知</td>
+      </tr>
+      <tr>
+        <td><span class="pill p-gray">规范性</span></td><td>步骤缺失、表述不清、单位遗漏</td><td>指出被扣分的步骤节点</td><td>步骤模板 + 得分点对照</td>
+      </tr>
+      <tr>
+        <td><span class="pill p-gray">策略性</span></td><td>时间不够、卡壳后放弃</td><td>给出<b>卡壳后的止损策略</b></td><td>限时训练 + 跳过决策练习</td>
+      </tr>
+    </table>
+
+    <h3>三个关键工程约束</h3>
+    <div class="card">
+      <ol>
+        <li><b>知识点必须从预置知识树里选，不许 AI 自由生成。</b>
+          做法：把「工科数学分析」「线性代数」的知识点树作为<b>候选枚举</b>塞进提示词，要求模型只能返回候选里的 id。
+          否则三周后你的知识点表里会出现 200 个同义不同名的节点，掌握度统计彻底失效。</li>
+        <li><b>出题必须带“同源”约束。</b>
+          变式题要显式指定：同知识点、同题型、<b>换数值或换情境</b>，但<b>不改变解题方法</b>。
+          并在提示词里禁止出现原题原答案 —— 否则用户只是背下了这道题的答案。</li>
+        <li><b>AI 输出一律要走结构化输出（JSON Schema）。</b>
+          不要让模型返回自由文本再正则去解析。题干里天然带 LaTeX 和换行，正则必然崩。</li>
+      </ol>
+    </div>
+
+    <h3>异步化：别让用户等 AI</h3>
+    <p>一次收录要串三次模型调用（解析 → 归因 → 出题），全部同步等待会超过小程序请求体感上限。设计成：</p>
+    <div class="flow">
+      <div class="step"><div class="k">立即返回</div><div class="t">落库 + 状态 new</div><div class="d">用户马上看到错题进了本子</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">后台</div><div class="t">ai_tasks 队列</div><div class="d">云函数异步消费，失败自动重试（上限 3 次）</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">通知</div><div class="t">订阅消息 / 角标</div><div class="d">分析完成时告诉用户</div></div>
+    </div>
+  </section>
+
+  <!-- ============ 8 ============ -->
+  <section id="growth">
+    <h2><span class="n">8</span>获客闭环（你要求的“快速获得用户”）</h2>
+    <p class="lead">教育类小程序的自然裂变点只有两个：<b>成绩可见的进步</b> 和 <b>同学之间的比较</b>。围绕这两点设计。</p>
+
+    <table>
+      <tr><th>机制</th><th>怎么做</th><th>为什么有效</th><th>优先级</th></tr>
+      <tr>
+        <td><b>错题周报分享卡</b></td>
+        <td>每周生成「本周消灭 N 道错题，最薄弱：定积分换元」卡片，可发群/朋友圈</td>
+        <td>卡片内容自带<b>结果炫耀属性</b>，且点开就是小程序首页（天然落地页）</td>
+        <td><span class="pill p-green">MVP</span></td>
+      </tr>
+      <tr>
+        <td><b>群入口 · 班级错题墙</b></td>
+        <td>同一门课的同学可加入同一错题墙，看到「本课最易错 Top5 知识点」</td>
+        <td>从「一个人的工具」变成「班级的共同话题」，群内传播天然高效</td>
+        <td><span class="pill p-purple">V2</span></td>
+      </tr>
+      <tr>
+        <td><b>组队打卡</b></td>
+        <td>2–5 人组队，连续订正 N 天解锁成就，断卡全队可见</td>
+        <td>同伴压力比自我激励强得多，且<b>每拉一个人就是一次拉新</b></td>
+        <td><span class="pill p-purple">V2</span></td>
+      </tr>
+      <tr>
+        <td><b>订阅消息召回</b></td>
+        <td>艾宾浩斯到点提醒「今天该复习 3 道定积分错题」</td>
+        <td>错题复习本身就是<b>有时效性</b>的，提醒不是打扰而是刚需</td>
+        <td><span class="pill p-green">MVP</span></td>
+      </tr>
+      <tr>
+        <td><b>考前冲刺包</b></td>
+        <td>把整学期错题按知识点打包成「考前 30 分钟速览」</td>
+        <td>考前是使用频次峰值，也是<b>最可能主动分享</b>的时刻</td>
+        <td><span class="pill p-blue">V3</span></td>
+      </tr>
+    </table>
+
+    <div class="warn">
+      <b>订阅消息有个必须提前知道的限制</b>：一次性订阅消息<b>一次授权只能推一条</b>。所以提醒策略要设计成「让用户在完成订正时顺手点一次订阅」——
+      把授权动作<b>嵌进主流程</b>，而不是单独弹一个授权页。长期订阅消息目前只对特定类目开放，不要指望它。
+    </div>
+  </section>
+
+  <!-- ============ 9 ============ -->
+  <section id="compliance">
+    <h2><span class="n">9</span>审核与合规清单（上线前逐条核）</h2>
+    <table>
+      <tr><th>#</th><th>项</th><th>要求</th><th>风险</th></tr>
+      <tr><td>1</td><td>服务类目</td><td>教育类目需相应资质；先用「工具-效率」或「教育-教育信息服务」试投，按审核反馈调整</td><td><span class="pill p-red">高</span></td></tr>
+      <tr><td>2</td><td><b>功能定位表述</b></td><td>名称、简介、页面文案中<b>不得出现</b>“搜题”“出答案”“代做”“拍照解题”</td><td><span class="pill p-red">致命</span></td></tr>
+      <tr><td>3</td><td>内容安全</td><td>所有用户输入与 AI 输出过 <code>msgSecCheck</code>；图片过 <code>imgSecCheck</code></td><td><span class="pill p-red">高</span></td></tr>
+      <tr><td>4</td><td>AI 生成内容标识</td><td>分析结果页显著提示「由 AI 生成，仅供参考，请以老师讲解为准」</td><td><span class="pill p-orange">中</span></td></tr>
+      <tr><td>5</td><td>题目版权</td><td>用户协议中明确：用户上传内容版权归原权利人，平台仅提供个人学习用途的整理</td><td><span class="pill p-orange">中</span></td></tr>
+      <tr><td>6</td><td>隐私政策</td><td>错题含学习数据，属个人信息；需隐私政策 + 用户协议，且要说明 AI 会处理其内容</td><td><span class="pill p-red">高</span></td></tr>
+      <tr><td>7</td><td>未成年人保护</td><td>若有中学生用户，需评估未成年人个人信息处理规则</td><td><span class="pill p-orange">中</span></td></tr>
+      <tr><td>8</td><td>第三方数据</td><td>不得在文案或功能上表现为「官方对接学习通」，避免商标与不正当竞争风险</td><td><span class="pill p-red">高</span></td></tr>
+    </table>
+    <div class="note">
+      <b>第 2 条请当成硬约束写进产品文档。</b>这个品类的审核拒绝理由里，「涉及提供作业答案、存在代写嫌疑」出现频率极高。
+      我们的功能顺序（先订正、后解析）不只是产品设计，<b>它就是过审的论据</b>。
+    </div>
+  </section>
+
+  <!-- ============ 10 ============ -->
+  <section id="roadmap">
+    <h2><span class="n">10</span>上线路线图</h2>
+    <div class="two">
+      <div class="card">
+        <h3 style="margin-top:0"><span class="pill p-green">MVP</span> 第一阶段 · 验证核心假设</h3>
+        <p><b>要验证的假设</b>：学生愿意为了「看清自己为什么错」而多花一步去收录。</p>
+        <ul>
+          <li>剪贴板导入 + 截图导入</li>
+          <li>错题本（筛选：课程 / 知识点 / 状态）</li>
+          <li>订正流程 + 状态机</li>
+          <li>错因分析（六大错因）</li>
+          <li>变式训练（每错题 3 题）</li>
+          <li>复习提醒（订阅消息）</li>
+          <li><b>预置高数 / 线代知识树</b></li>
+        </ul>
+        <p style="color:var(--ink2);font-size:13px"><b>不做</b>：电脑端导入助手、组队、班级墙、多学科。</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0"><span class="pill p-purple">V2</span> 第二阶段 · 提高留存与传播</h3>
+        <ul>
+          <li>电脑端「学习通导入助手」（复用现有驱动资产）</li>
+          <li>知识点掌握度热力图</li>
+          <li>艾宾浩斯完整排期 + 周报</li>
+          <li>错题周报分享卡</li>
+          <li>组队打卡</li>
+        </ul>
+        <h3><span class="pill p-blue">V3</span> 第三阶段 · 扩展</h3>
+        <ul>
+          <li>班级错题墙 / 群入口</li>
+          <li>考前冲刺包</li>
+          <li>多学科（物理、计算机等）</li>
+          <li>教师端（班级共性错因分析）</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>四个最可能让项目失败的点</h3>
+    <table class="compact">
+      <tr><th>风险</th><th>为什么危险</th><th>对策</th></tr>
+      <tr><td>AI 归因不准</td><td>归因一错，后面所有训练都白练，用户立刻流失</td><td>MVP 阶段<b>允许用户手动修正错因</b>，用修正数据反哺提示词</td></tr>
+      <tr><td>收录太麻烦</td><td>这是整个闭环最脆弱的一环</td><td>MVP 就把剪贴板导入做到极致（一键、自动切题、自动识别课程）</td></tr>
+      <tr><td>AI 成本失控</td><td>唯一线性增长的成本</td><td>日配额 + 图片压缩 + 结果缓存（同题干不重复调模型）</td></tr>
+      <tr><td>审核判定为搜题工具</td><td>直接下架</td><td>定位文案、功能顺序、订阅授权文案三处一起守（见第 9 节）</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    <b>错题订正 · 知识强化小程序 — 架构方案 v1</b><br>
+    技术栈：原生小程序 + 微信云开发 · UI：TDesign 小程序版 · 数据源：学习通作业（剪贴板 / 截图导入）<br>
+    种子数据：高数分析（工科数学分析）HW1 09-21 · 新建作业 20260923100409 · 线代第1次作业 · HW2 0923
+  </footer>
+
+</div>
+</body>
+</html>

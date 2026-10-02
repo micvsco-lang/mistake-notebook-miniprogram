@@ -1,0 +1,29 @@
+{
+  "photo": "miniprogram/assets/hw/hw1-q3.jpg",
+  "note": "Kimi K3 转录（2026-09-24）。场景：旋转90°的手写证明页，无印刷题干、无红笔批语，有学生自己的涂改和背面透字。对应 HW1-Q3（A={x∈Q|x²<2} 在 Q 内确界讨论，实得 6/20）。",
+  "modelOutput": {
+    "questions": [
+      {
+        "no": 1,
+        "type": "证明题",
+        "gist": "A=(0,√2)∩Q 的确界讨论",
+        "stem": "",
+        "myAnswer": "证明：因为 A={x∈Q|0<x<√2}=(0,√2)∩Q。∀x∈A，∃M∈Q且M>√2，使x<√2<M，故A在Q内有上界。又因为∀M∈Q，∃ε>0，令ε=[M−√2]+1，所以M−ε□√2。故∀M∈Q，∃ε>0且ε∈Q，M−ε<√2，由□□性可得□□。因此A无上确界（在Q内）。综上所述，A在Q内有上界，无上确界。",
+        "rightAnswer": "",
+        "comment": "",
+        "score": null,
+        "fullScore": null,
+        "kpNames": ["上确界", "有理数集内的确界与稠密性", "确界定义的两步验证"],
+        "confidence": "medium"
+      }
+    ]
+  },
+  "expect": {
+    "questionCount": 1,
+    "stemEmpty": true,
+    "myAnswerNonEmpty": true,
+    "kpAllInWhitelist": true,
+    "kpMin": 2,
+    "scoreNull": true
+  }
+}

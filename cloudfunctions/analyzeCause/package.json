@@ -1,0 +1,9 @@
+{
+  "name": "analyzeCause",
+  "version": "1.0.0",
+  "description": "用大模型对错题做归因，只返回预置错因代码",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,137 @@
+.edit-page { padding-bottom: 200rpx; }
+
+.bar-mine { background: #f59e0b; }
+.bar-done { background: #2b6cff; }
+
+/* ============ 引导 ============ */
+.hint {
+  font-size: 24rpx;
+  color: var(--t3);
+  line-height: 1.6;
+  margin-bottom: 14rpx;
+}
+.prompts { display: flex; flex-direction: column; gap: 10rpx; margin-bottom: 20rpx; }
+.prompt {
+  font-size: 25rpx;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-radius: 12rpx;
+  padding: 14rpx 20rpx;
+  line-height: 1.5;
+}
+.prompt:active { background: #dbe7ff; }
+
+/* ============ 输入 ============ */
+.ta {
+  width: 100%;
+  min-height: 260rpx;
+  font-size: 28rpx;
+  line-height: 1.75;
+  color: var(--t1);
+  background: #f7f9fc;
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+  box-sizing: border-box;
+}
+.ta-ph { color: #b9bfc9; font-size: 26rpx; line-height: 1.7; }
+
+/* ============ 照片 ============ */
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+.photo-item { position: relative; width: 180rpx; height: 180rpx; }
+.photo-img {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid var(--line);
+}
+.photo-del {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  background: rgba(22, 24, 29, 0.72);
+  color: #fff;
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============ 完成态 ============ */
+.done-head { text-align: center; padding: 30rpx 0 26rpx; }
+.done-ico {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: var(--ok-soft);
+  color: var(--ok);
+  font-size: 48rpx;
+  line-height: 96rpx;
+  margin: 0 auto;
+}
+.done-title { font-size: 34rpx; font-weight: 600; margin-top: 20rpx; }
+.done-sub { font-size: 25rpx; color: var(--t3); margin-top: 8rpx; }
+
+.mine-text {
+  font-size: 27rpx;
+  line-height: 1.75;
+  color: var(--t1);
+  background: #f7f9fc;
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+  white-space: pre-wrap;
+}
+
+.cause-row {
+  display: flex;
+  gap: 16rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+}
+.cause-row:last-child { border-bottom: none; }
+.cause-code {
+  width: 62rpx;
+  height: 42rpx;
+  border-radius: 10rpx;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 42rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+.cause-text { font-size: 26rpx; line-height: 1.7; color: var(--t1); }
+.cause-ev { font-size: 22rpx; color: var(--t3); margin-top: 8rpx; }
+
+.advice {
+  font-size: 27rpx;
+  line-height: 1.8;
+  color: var(--t1);
+  background: #f7f9fc;
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+  white-space: pre-wrap;
+}
+
+/* ============ 底栏 ============ */
+.foot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 18rpx;
+  padding: 18rpx 24rpx calc(18rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1rpx solid var(--line);
+  z-index: 10;
+}
+.foot .flex1 { flex: 1; }

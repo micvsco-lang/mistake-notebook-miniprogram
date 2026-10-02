@@ -1,0 +1,8 @@
+{
+  "name": "recognizeWork",
+  "version": "1.0.0",
+  "description": "拍照识别：把已批改作业的照片转成结构化题目（题干/我的解答/教师批语/得分/知识点）",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {}
+}

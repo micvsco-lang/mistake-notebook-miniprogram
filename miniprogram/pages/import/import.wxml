@@ -1,0 +1,438 @@
+<view class="page">
+
+  <!-- 切换 -->
+  <view class="tabs">
+    <view class="tab {{tab === 'photo' ? 'tab-on' : ''}}" bindtap="setTab" data-t="photo">截图导入</view>
+    <view class="tab {{tab === 'paste' ? 'tab-on' : ''}}" bindtap="setTab" data-t="paste">粘贴导入</view>
+    <view class="tab {{tab === 'manual' ? 'tab-on' : ''}}" bindtap="setTab" data-t="manual">手动录入</view>
+    <view class="tab {{tab === 'data' ? 'tab-on' : ''}}" bindtap="setTab" data-t="data">备份</view>
+  </view>
+
+  <!-- ==================== 拍照识别 ==================== -->
+  <block wx:if="{{tab === 'photo'}}">
+
+    <!-- 主路径：截图导入（手机上最省事。配了云环境会自动识别拆栏） -->
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">截图导入{{cloudOk ? '（自动识别）' : '（手机上最省事）'}}</text></view>
+
+      <view class="note" wx:if="{{cloudOk}}">
+        <text>在学习通里把作业页截图，选进来会自动 <text style="font-weight:500">读出题干、你的解答、老师批语、得分、知识点</text>，分别填进对应的栏里；一张图里有几道题就拆几道。识别结果可以逐条改，确认后再入库（原图会一起留着对照）。</text>
+      </view>
+      <view class="note" wx:else>
+        <text>在学习通里把作业页截图，每张图当作一道题原样搬进错题本 —— 不识别、不分析、不丢东西，题干就是那张截图。之后在小程序里对着原图补题干和知识点。</text>
+      </view>
+
+      <view class="fld mt16">
+        <text class="fld-l">作业名</text>
+        <input class="fld-in" value="{{photoForm.assignTitle}}" bindinput="onPhotoFormInput" data-f="assignTitle" placeholder="例如 HW3 0926" placeholder-class="ta-ph" />
+      </view>
+      <view class="fld">
+        <text class="fld-l">课程</text>
+        <picker range="{{courseNames}}" bindchange="pickPhotoCourse" class="fld-in">
+          <view class="fld-pick">{{courseNames[photoCourseIndex || 0]}} ▾</view>
+        </picker>
+      </view>
+
+      <view class="btn btn-primary btn-block mt16" bindtap="quickShotImport">{{cloudOk ? '🖼 选截图，自动识别' : '🖼 选截图，直接入库'}}</view>
+      <view class="hint mt12">先给这一批起个作业名（同一份作业的截图用同一个名字），再选图。一次最多 9 张。</view>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar bar-grab"></view><text class="blk-title">只要图、不要识别</text></view>
+
+      <view class="note">
+        <text>识图有时会认错字，或者你就想先把整份作业原样存下来再说 —— 那用这条：照片直接当题干，一个字都不改写。<text wx:if="{{cloudOk}}">（上面那条会自动识别，这条不会。）</text></text>
+      </view>
+
+      <view class="row gap12 mt16">
+        <view class="btn btn-line flex1" bindtap="pickPhoto">📷 拍照 / 相册</view>
+        <view class="btn btn-line flex1" bindtap="pickFromChat">💬 聊天记录选图</view>
+      </view>
+      <view class="hint mt12">选完会进下面的队列，可以逐张重试识别或删掉。</view>
+    </view>
+
+    <!-- 照片队列 -->
+    <view class="blk" wx:if="{{shots.length}}">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">这一批 {{shots.length}} 张</text>
+        <text class="blk-head-right" bindtap="clearShots">全部清掉</text>
+      </view>
+
+      <view class="shot" wx:for="{{shots}}" wx:key="id">
+        <image class="shot-img" src="{{item.path}}" mode="aspectFill" bindtap="previewShot" data-src="{{item.path}}" />
+        <view class="shot-body">
+          <view class="shot-state">
+            <text class="tag {{item.status === 'done' ? 'st-mastered' : item.status === 'fail' ? 'st-new' : 'st-analyzed'}}">{{item.stateText}}</text>
+            <text class="t3 f22" wx:if="{{item.status === 'done'}}">拆出 {{item.count}} 道题</text>
+          </view>
+          <view class="err mt12" wx:if="{{item.status === 'fail'}}">{{item.msg}}</view>
+          <view class="row gap12 mt12">
+            <view class="btn btn-line btn-xs" wx:if="{{item.status === 'fail'}}" bindtap="retryShot" data-id="{{item.id}}">重试</view>
+            <view class="btn btn-line btn-xs" wx:if="{{item.status === 'idle' && cloudOk}}" bindtap="retryShot" data-id="{{item.id}}">开始识别</view>
+            <view class="btn btn-line btn-xs" bindtap="removeShot" data-id="{{item.id}}">删掉这张</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 识别结果 -->
+    <view class="blk" wx:if="{{flatQ.length}}">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">识别结果（{{checkedCount}}/{{flatQ.length}} 道）</text>
+        <text class="blk-head-right" bindtap="removeUnchecked">删掉未勾选</text>
+      </view>
+      <view class="hint">点卡片展开：里面能改题干、解答、批语和得分，对着原图核一遍再入库。标了「□×N」的是模型没认出的字，顺手补上。</view>
+
+      <view class="row gap12 mt12 ts-line">
+        <text class="f24 t3">本份总分</text>
+        <input class="ts-score" type="number" value="{{totalScore}}" bindinput="onTotalScore" placeholder="100" placeholder-class="ta-ph" />
+        <view class="btn btn-line btn-xs" bindtap="regradeAll">按总分重新均分</view>
+      </view>
+      <view class="hint mt8">满分**优先取题头标注**（如「证明题，16.6 分」「计算题，20 分」）—— 那才是真实值。题头没标、模型也没读到的，才会按均分兜底一次，值旁边标「推算」。**填好之后程序不会再自动改动你的数字**，要重算请点上面的按钮。</view>
+
+      <view class="q-item {{q.on ? '' : 'q-off'}}" wx:for="{{flatQ}}" wx:key="key">
+        <view class="q-head" bindtap="toggleQOpen" data-i="{{index}}">
+          <view class="q-check {{q.on ? 'q-check-on' : ''}}" catchtap="toggleQ" data-i="{{index}}">{{q.on ? '✓' : ''}}</view>
+          <text class="q-no">Q{{q.no}}</text>
+          <view class="flex1">
+            <view class="q-gist">{{q.gist || '（没识别出考点）'}}</view>
+            <view class="q-meta">{{q.type}}<text wx:if="{{q.hasScore}}"> · {{q.scoreInput}}/{{q.fullScoreInput}}</text><text> · {{q.kp.length ? '知识点已认' : '知识点要补'}}</text><text class="warn" wx:if="{{q.badChars}}"> · □×{{q.badChars}}，对照原图补</text><text class="warn" wx:if="{{!q.stemText}}"> · 缺题干，展开补一下</text></view>
+          </view>
+          <text class="q-arrow">{{q.open ? '⌃' : '⌄'}}</text>
+        </view>
+
+        <view class="q-edit" wx:if="{{q.open}}">
+          <view class="q-tagline" wx:if="{{q.confidence !== 'high'}}">模型自评：{{q.confidence === 'low' ? '不太确定，重点核对' : '一般，扫一眼'}}</view>
+
+          <view class="t3 f24" wx:else>这道题没带上原图。</view>
+
+          <view class="q-fld-l">题干</view>
+          <image wx:if="{{q.stemPhoto}}" class="q-crop" src="{{q.stemPhoto}}" mode="widthFix" bindtap="previewQ" data-src="{{q.stemPhoto}}" />
+          <textarea class="ta ta-sm" value="{{q.stemText}}" bindinput="onQInput" data-i="{{index}}" data-f="stemText" placeholder="题目原文" placeholder-class="ta-ph" maxlength="-1" auto-height show-confirm-bar="{{false}}" />
+
+          <view class="q-fld-l">我的解答</view>
+          <image wx:if="{{q.answerPhoto}}" class="q-crop" src="{{q.answerPhoto}}" mode="widthFix" bindtap="previewQ" data-src="{{q.answerPhoto}}" />
+          <textarea class="ta ta-sm" value="{{q.myAnswerText}}" bindinput="onQInput" data-i="{{index}}" data-f="myAnswerText" placeholder="照片里你自己的手写解答" placeholder-class="ta-ph" maxlength="-1" auto-height show-confirm-bar="{{false}}" />
+
+          <view class="q-fld-l">教师批语</view>
+          <image wx:if="{{q.commentPhoto}}" class="q-crop" src="{{q.commentPhoto}}" mode="widthFix" bindtap="previewQ" data-src="{{q.commentPhoto}}" />
+          <textarea class="ta ta-sm" value="{{q.commentText}}" bindinput="onQInput" data-i="{{index}}" data-f="commentText" placeholder="老师红笔写的话，没有就留空" placeholder-class="ta-ph" maxlength="-1" auto-height show-confirm-bar="{{false}}" />
+
+          <view class="q-fld-l">标准解答（订正后才解锁）</view>
+          <image wx:if="{{q.rightPhoto}}" class="q-crop" src="{{q.rightPhoto}}" mode="widthFix" bindtap="previewQ" data-src="{{q.rightPhoto}}" />
+          <textarea class="ta ta-sm" value="{{q.rightText}}" bindinput="onQInput" data-i="{{index}}" data-f="rightText" placeholder="仅当照片上老师写了标准解法才填" placeholder-class="ta-ph" maxlength="-1" auto-height show-confirm-bar="{{false}}" />
+
+          <view class="q-fld-l">整张原图（切片看不全时对着它看）</view>
+          <image wx:if="{{q.photo}}" class="q-photo" src="{{q.photo}}" mode="widthFix" bindtap="previewQ" data-src="{{q.photo}}" />
+          <view class="t3 f24" wx:else>这道题没带上原图。</view>
+
+          <view class="row gap12 mt16">
+            <view class="fld-in-mini">
+              <text class="q-fld-l2">得分</text>
+              <input class="q-num" type="number" value="{{q.scoreInput}}" bindinput="onQNum" data-i="{{index}}" data-f="scoreInput" placeholder="—" placeholder-class="ta-ph" />
+            </view>
+            <view class="fld-in-mini">
+              <text class="q-fld-l2">满分</text>
+              <input class="q-num" type="number" value="{{q.fullScoreInput}}" bindinput="onQNum" data-i="{{index}}" data-f="fullScoreInput" placeholder="题头标注" placeholder-class="ta-ph" />
+              <text class="t3 f21" wx:if="{{q.fullScoreInput && !q.fullScoreReal}}">推算</text>
+            </view>
+          </view>
+
+          <view class="q-fld-l">知识点（点 × 删掉，或搜一个补上）</view>
+          <view class="row wrap" wx:if="{{q.kpNames.length}}">
+            <view class="tag tag-brand" wx:for="{{q.kpNames}}" wx:for-item="kn" wx:for-index="ki" wx:key="*this"
+                  bindtap="removeKp" data-i="{{index}}" data-ki="{{ki}}">{{kn}} ×</view>
+          </view>
+          <text class="t3 f24" wx:elif="{{!q.kpKw}}">没认出知识点。不影响入库 —— 下面搜一个补上，或者先不管。</text>
+
+          <input class="kp-search" value="{{q.kpKw}}" bindinput="onKpSearch" data-i="{{index}}"
+                 placeholder="搜知识点，如「极限」「中值定理」「特征值」" placeholder-class="ta-ph" />
+          <view class="kp-hits" wx:if="{{q.kpHits.length}}">
+            <view class="kp-hit" wx:for="{{q.kpHits}}" wx:for-item="h" wx:key="id"
+                  bindtap="pickKp" data-i="{{index}}" data-id="{{h.id}}">
+              <text class="kp-hit-name">{{h.name}}</text>
+              <text class="kp-hit-path">{{h.pathText}}</text>
+            </view>
+          </view>
+          <text class="t3 f24" wx:elif="{{q.kpKw}}">没搜到，换个词试试。</text>
+
+          <view class="btn btn-line btn-xs q-del" bindtap="removeQ" data-i="{{index}}">删掉这道题</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 批次设置 -->
+    <view class="blk" wx:if="{{flatQ.length}}">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">这批怎么归</text></view>
+
+      <view class="fld">
+        <text class="fld-l">课程</text>
+        <picker range="{{courseNames}}" bindchange="pickPhotoCourse" class="fld-in">
+          <view class="fld-pick">{{courseNames[photoCourseIndex || 0]}} ▾</view>
+        </picker>
+      </view>
+
+      <view class="fld">
+        <text class="fld-l">作业名</text>
+        <input class="fld-in" value="{{photoForm.assignTitle}}" bindinput="onPhotoFormInput" data-f="assignTitle" placeholder="例如 HW3 0926" placeholder-class="ta-ph" />
+      </view>
+
+      <view class="blk-head mt24">
+        <view class="blk-bar"></view>
+        <text class="blk-title">默认知识点</text>
+        <text class="blk-head-right" bindtap="toggleDefaultKpOpen">{{defaultKpOpen ? '收起 ⌃' : '展开 ⌄'}}</text>
+      </view>
+      <view class="hint">给没认出知识点的那几道兜底。全部认出来了就不用管它。</view>
+      <view class="row wrap mt12" wx:if="{{defaultKp.length}}">
+        <view class="tag tag-brand" wx:for="{{defaultKp}}" wx:key="id">{{item.name}}</view>
+      </view>
+      <view class="kp-edit" wx:if="{{defaultKpOpen}}">
+        <view
+          class="kp-node {{k.on ? 'kp-on' : ''}}"
+          wx:for="{{dkpOptions}}"
+          wx:key="id"
+          bindtap="toggleDefaultKp"
+          data-id="{{k.id}}"
+          style="padding-left:{{k.depth * 28 + 20}}rpx"
+        >
+          <text class="kp-check">{{k.on ? '✓' : '○'}}</text>{{k.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="err" wx:if="{{photoErr}}">{{photoErr}}</view>
+
+    <!-- 手写符号对照 -->
+    <view class="blk">
+      <view class="blk-head" bindtap="toggleSym">
+        <view class="blk-bar bar-sym"></view>
+        <text class="blk-title">手写符号对照</text>
+        <text class="blk-head-right">{{symOpen ? '收起 ⌃' : '展开 ⌄'}}</text>
+      </view>
+      <view class="hint">老师 AI 会把手写 σ 认成 6 再批「符号错误」。识别结果里出现奇怪的字符时查这张表——多半是符号被认错了，形状差异不是错误。</view>
+      <block wx:if="{{symOpen}}">
+        <view class="sym-group" wx:for="{{symGroups}}" wx:for-item="g" wx:key="name">
+          <view class="sym-gname">{{g.name}}</view>
+          <view class="sym-row" wx:for="{{g.items}}" wx:for-item="s" wx:key="sym">
+            <text class="sym-sym">{{s.sym}}</text>
+            <view class="flex1">
+              <view class="sym-name">{{s.name}}</view>
+              <view class="sym-look" wx:if="{{s.look}}">手写常像：{{s.look}}</view>
+              <view class="sym-scene" wx:if="{{s.scene}}">{{s.scene}}</view>
+            </view>
+          </view>
+        </view>
+        <view class="hint mt12">这张表已经内置进识别流程：每次拍照识别都会提示模型「按上下文取标准符号，别照抄形状」。</view>
+      </block>
+    </view>
+
+    <view class="btn btn-primary btn-block" wx:if="{{flatQ.length}}" bindtap="submitPhotos">加入错题本（{{checkedCount}} 道）</view>
+
+  </block>
+
+  <!-- ==================== 粘贴导入 ==================== -->
+  <block wx:if="{{tab === 'paste'}}">
+
+    <!-- ============ 手机抓取（免电脑、零费用） ============ -->
+    <view class="blk">
+      <view class="blk-head" bindtap="toggleGrab">
+        <view class="blk-bar bar-grab"></view>
+        <text class="blk-title">在手机上直接抓（进阶，可选）</text>
+        <text class="blk-head-right">{{grabOpen ? '收起 ⌃' : '展开 ⌄'}}</text>
+      </view>
+      <view class="hint">这条路能把文字、公式图、手写照片一次性全搬进来，代价是要先给手机浏览器装一个脚本。装不上就跳过 —— 用「截图导入」一样能搬，只是题干变成图片。</view>
+
+      <block wx:if="{{grabOpen}}">
+        <view class="gl" wx:for="{{grabSteps}}" wx:key="*this">{{item}}</view>
+
+        <view class="blk-head mt24"><view class="blk-bar bar-grab"></view><text class="blk-title">从学习通 App 里出发</text></view>
+        <view class="gl gl-sm" wx:for="{{grabFromApp}}" wx:for-item="fa" wx:key="*this">{{fa}}</view>
+
+        <view class="btn btn-primary btn-block mt16" bindtap="copyGrabScript">📋 复制脚本（{{grabSize}}）</view>
+        <view class="hint mt12">脚本很长（约 {{grabSize}}），这是正常的——整段粘进书签的网址栏或快捷指令的代码框就行，不要手动改它。</view>
+
+        <view class="way" wx:for="{{grabWays}}" wx:for-item="w" wx:key="name">
+          <view class="way-head">
+            <text class="way-name">{{w.name}}</text>
+            <text class="way-tag">{{w.tag}}</text>
+          </view>
+          <view class="gl gl-sm" wx:for="{{w.steps}}" wx:for-item="s" wx:key="*this">{{s}}</view>
+        </view>
+
+        <view class="note note-warn mt16"><text>{{grabBrowsers}}</text></view>
+        <view class="note note-warn mt12"><text>{{grabWhy}}</text></view>
+
+        <view class="blk-head mt24"><view class="blk-bar"></view><text class="blk-title">注意</text></view>
+        <view class="gl gl-sm" wx:for="{{grabNotes}}" wx:for-item="n" wx:key="*this">· {{n}}</view>
+      </block>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">怎么拿到作业数据</text></view>
+      <view class="steps">
+        <view class="step"><text class="step-n">1</text><text class="step-t">手机上最简单的是「截图导入」：截图作业页，一张图当一道题搬进来，全程不碰电脑</text></view>
+        <view class="step"><text class="step-n">2</text><text class="step-t">想让文字和公式图都保留原样，就试上面那条手机抓取（要给浏览器装脚本，装不上就算了）</text></view>
+        <view class="step"><text class="step-n">3</text><text class="step-t">也可以像以前那样在电脑上跑抓取脚本，同样导出一份作业包 JSON</text></view>
+        <view class="step"><text class="step-n">4</text><text class="step-t">把 JSON 全文粘到下面，点「解析」→「导入」</text></view>
+      </view>
+      <view class="note note-warn mt16">
+        <text>只处理你自己账号下、你自己看得到的内容。这是个人自用工具，不做代登录、不批量拉取他人的数据。</text>
+      </view>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">作业包 JSON</text>
+        <text class="blk-head-right" bindtap="loadSample">载入示例</text>
+      </view>
+      <textarea
+        class="ta"
+        value="{{jsonText}}"
+        bindinput="onJsonInput"
+        placeholder='{"id":"as_xxx","title":"HW2 0923","questions":[...]}'
+        placeholder-class="ta-ph"
+        maxlength="-1"
+        auto-height
+        show-confirm-bar="{{false}}"
+      />
+      <view class="err" wx:if="{{parseErr}}">{{parseErr}}</view>
+      <view class="btn btn-ghost btn-block mt16" bindtap="parsePreview">解析</view>
+    </view>
+
+    <view class="blk" wx:if="{{preview}}">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">解析结果</text></view>
+      <view class="pv" wx:for="{{preview}}" wx:key="title">
+        <view class="pv-title">{{item.title}}</view>
+        <view class="pv-sub">共 {{item.count}} 题 · 可导入错题 {{item.wrong}} 道</view>
+        <view class="pv-sub t3" wx:if="{{item.plain}}">这份作业没有教师批语（没得分也没判词），按「原样搬运」把 {{item.count}} 道题全部导入，之后在小程序里自己整理。</view>
+      </view>
+      <view class="btn btn-primary btn-block mt16" bindtap="doImport">确认导入</view>
+    </view>
+
+  </block>
+
+  <!-- ==================== 手动录入 ==================== -->
+  <block wx:if="{{tab === 'manual'}}">
+
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">基本信息</text></view>
+
+      <view class="fld">
+        <text class="fld-l">课程</text>
+        <picker range="{{courseNames}}" bindchange="pickCourse" class="fld-in">
+          <view class="fld-pick">{{courseNames[courseIndex || 0]}} ▾</view>
+        </picker>
+      </view>
+
+      <view class="fld">
+        <text class="fld-l">作业名</text>
+        <input class="fld-in" value="{{form.assignTitle}}" bindinput="onFormInput" data-f="assignTitle" placeholder="例如 HW2 0923" placeholder-class="ta-ph" />
+      </view>
+
+      <view class="fld">
+        <text class="fld-l">题号／考点</text>
+        <input class="fld-in" value="{{form.gist}}" bindinput="onFormInput" data-f="gist" placeholder="例如 数列极限的 ε-N 定义" placeholder-class="ta-ph" />
+      </view>
+
+      <view class="fld">
+        <text class="fld-l">题型</text>
+        <picker range="{{typeOptions}}" bindchange="pickType" class="fld-in">
+          <view class="fld-pick">{{typeOptions[typeIndex]}} ▾</view>
+        </picker>
+      </view>
+
+      <view class="fld">
+        <text class="fld-l">得分</text>
+        <input class="fld-in" type="number" value="{{form.score}}" bindinput="onFormInput" data-f="score" placeholder="例如 6" placeholder-class="ta-ph" />
+      </view>
+
+      <view class="fld">
+        <text class="fld-l">满分</text>
+        <input class="fld-in" type="number" value="{{form.fullScore}}" bindinput="onFormInput" data-f="fullScore" placeholder="20" placeholder-class="ta-ph" />
+      </view>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">题干</text></view>
+      <textarea class="ta ta-sm" value="{{form.stemText}}" bindinput="onFormInput" data-f="stemText" placeholder="把题目抄进来（公式可以用文字描述）" placeholder-class="ta-ph" maxlength="-1" auto-height show-confirm-bar="{{false}}" />
+
+      <view class="blk-head mt24"><view class="blk-bar bar-right"></view><text class="blk-title">正确答案</text></view>
+      <textarea class="ta ta-sm" value="{{form.rightText}}" bindinput="onFormInput" data-f="rightText" placeholder="选填" placeholder-class="ta-ph" maxlength="-1" auto-height show-confirm-bar="{{false}}" />
+
+      <view class="blk-head mt24"><view class="blk-bar bar-teacher"></view><text class="blk-title">批语／错在哪</text></view>
+      <textarea class="ta ta-sm" value="{{form.commentText}}" bindinput="onFormInput" data-f="commentText" placeholder="老师的批语，或你自己判断的失分原因。有这段，错因归类会准很多。" placeholder-class="ta-ph" maxlength="-1" auto-height show-confirm-bar="{{false}}" />
+
+      <view class="blk-head mt24"><view class="blk-bar"></view><text class="blk-title">我的作答照片</text></view>
+      <view class="photo-grid" wx:if="{{myArt.length}}">
+        <view class="photo-item" wx:for="{{myArt}}" wx:key="*this">
+          <image class="photo-img" src="{{item}}" mode="aspectFill" bindtap="previewArt" data-src="{{item}}" />
+          <view class="photo-del" catchtap="delPhoto" data-i="{{index}}">✕</view>
+        </view>
+      </view>
+      <view class="btn btn-line btn-sm mt16" bindtap="addPhoto">＋ 拍摄或选择照片</view>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head">
+        <view class="blk-bar"></view>
+        <text class="blk-title">知识点</text>
+        <text class="blk-head-right" bindtap="toggleKpOpen">{{kpOpen ? '收起 ⌃' : '展开 ⌄'}}</text>
+      </view>
+      <view class="row wrap">
+        <view class="tag tag-brand" wx:for="{{pickedKp}}" wx:key="id">{{item.name}}</view>
+        <view class="t3 f26" wx:if="{{!pickedKp.length}}">必选，至少一个</view>
+      </view>
+      <view class="kp-edit" wx:if="{{kpOpen}}">
+        <view
+          class="kp-node {{k.on ? 'kp-on' : ''}}"
+          wx:for="{{kpOptions}}"
+          wx:key="id"
+          bindtap="toggleKp"
+          data-id="{{k.id}}"
+          style="padding-left:{{k.depth * 28 + 20}}rpx"
+        >
+          <text class="kp-check">{{k.on ? '✓' : '○'}}</text>{{k.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="btn btn-primary btn-block" bindtap="submitManual">加入错题本</view>
+
+  </block>
+
+  <!-- ==================== 备份 ==================== -->
+  <block wx:if="{{tab === 'data'}}">
+
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">导出备份</text></view>
+      <view class="hint">换手机、重装小程序之前先导出一份。点下面按钮会自动复制到剪贴板，粘到手机备忘录或电脑上存好。</view>
+      <view class="btn btn-ghost btn-block mt16" bindtap="doExport">导出并复制全部数据</view>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar"></view><text class="blk-title">从备份恢复</text></view>
+      <textarea
+        class="ta ta-sm"
+        value="{{backupText}}"
+        bindinput="onBackupInput"
+        placeholder="把之前导出的 JSON 粘到这里"
+        placeholder-class="ta-ph"
+        maxlength="-1"
+        auto-height
+        show-confirm-bar="{{false}}"
+      />
+      <view class="btn btn-line btn-block mt16" bindtap="doRestore">恢复</view>
+    </view>
+
+    <view class="blk">
+      <view class="blk-head"><view class="blk-bar bar-bad"></view><text class="blk-title">清空重置</text></view>
+      <view class="hint">清掉所有错题、订正记录和复习进度，回到内置示例数据的状态。</view>
+      <view class="btn btn-line btn-block mt16 danger" bindtap="doReset">清空并重置</view>
+    </view>
+
+  </block>
+
+</view>

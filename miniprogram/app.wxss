@@ -1,0 +1,270 @@
+/* ==========================================================================
+   设计令牌与全局样式
+   ========================================================================== */
+page {
+  /* 品牌色 */
+  --brand: #2b6cff;
+  --brand-soft: #eaf1ff;
+  --brand-deep: #1f52cc;
+
+  /* 中性色 */
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --t1: #16181d;
+  --t2: #5b6270;
+  --t3: #9aa1ad;
+  --line: #e8ebf0;
+
+  /* 语义色 */
+  --ok: #16a34a;
+  --ok-soft: #e8f7ee;
+  --warn: #f59e0b;
+  --warn-soft: #fef4e2;
+  --bad: #dc2626;
+  --bad-soft: #fdecec;
+  --purple: #7c3aed;
+  --purple-soft: #f2ecfe;
+
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 28rpx;
+  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+}
+
+view, text, button, input, textarea { box-sizing: border-box; }
+
+/* ==========================================================================
+   布局
+   ========================================================================== */
+.page { padding: 24rpx 24rpx 60rpx; }
+.page-tab { padding-bottom: 160rpx; }          /* tabBar 页面留白 */
+
+.row { display: flex; align-items: center; }
+.row-top { display: flex; align-items: flex-start; }
+.between { justify-content: space-between; }
+.center { justify-content: center; }
+.wrap { flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; }
+.flex1 { flex: 1; min-width: 0; }
+.gap8 { gap: 8rpx; }
+.gap12 { gap: 12rpx; }
+.gap16 { gap: 16rpx; }
+.mt8 { margin-top: 8rpx; }
+.mt12 { margin-top: 12rpx; }
+.mt16 { margin-top: 16rpx; }
+.mt24 { margin-top: 24rpx; }
+.mb8 { margin-bottom: 8rpx; }
+.mb12 { margin-bottom: 12rpx; }
+.mb16 { margin-bottom: 16rpx; }
+
+/* ==========================================================================
+   卡片与文字
+   ========================================================================== */
+.card {
+  background: var(--card);
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(22, 24, 29, 0.04);
+}
+.card-tight { padding: 22rpx 24rpx; }
+.card-flat { box-shadow: none; border: 1rpx solid var(--line); }
+
+.t1 { color: var(--t1); }
+.t2 { color: var(--t2); }
+.t3 { color: var(--t3); }
+.ok { color: var(--ok); }
+.bad { color: var(--bad); }
+.warn { color: var(--warn); }
+.brand { color: var(--brand); }
+
+.f22 { font-size: 22rpx; }
+.f24 { font-size: 24rpx; }
+.f26 { font-size: 26rpx; }
+.f28 { font-size: 28rpx; }
+.f30 { font-size: 30rpx; }
+.f32 { font-size: 32rpx; }
+.f36 { font-size: 36rpx; }
+.f44 { font-size: 44rpx; }
+.bold { font-weight: 600; }
+.medium { font-weight: 500; }
+.nowrap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clamp2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.sec-title {
+  font-size: 26rpx;
+  color: var(--t3);
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  margin: 28rpx 4rpx 16rpx;
+}
+.sec-title:first-child { margin-top: 4rpx; }
+
+/* ==========================================================================
+   按钮
+   ========================================================================== */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0 32rpx;
+  border: none;
+}
+.btn::after { border: none; }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary.disabled, .btn-primary[disabled] { background: #b9c9ee; color: #fff; }
+.btn-ghost { background: var(--brand-soft); color: var(--brand); }
+.btn-line { background: #fff; color: var(--t2); border: 1rpx solid var(--line); }
+.btn-sm { height: 64rpx; font-size: 26rpx; border-radius: 12rpx; padding: 0 24rpx; }
+.btn-block { width: 100%; }
+
+/* ==========================================================================
+   标签、徽章
+   ========================================================================== */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 14rpx;
+  border-radius: 10rpx;
+  font-size: 22rpx;
+  line-height: 1;
+  background: #f2f4f8;
+  color: var(--t2);
+  margin-right: 8rpx;
+  margin-bottom: 8rpx;
+}
+.tag-brand { background: var(--brand-soft); color: var(--brand); }
+.tag-ok { background: var(--ok-soft); color: var(--ok); }
+.tag-warn { background: var(--warn-soft); color: #b45309; }
+.tag-bad { background: var(--bad-soft); color: var(--bad); }
+.tag-purple { background: var(--purple-soft); color: var(--purple); }
+
+/* 状态点 */
+.st-new { background: var(--warn-soft); color: #b45309; }
+.st-analyzed { background: var(--brand-soft); color: var(--brand); }
+.st-training { background: var(--purple-soft); color: var(--purple); }
+.st-mastered { background: var(--ok-soft); color: var(--ok); }
+
+.score-badge {
+  display: inline-flex;
+  align-items: baseline;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+  font-size: 26rpx;
+}
+.sc-good { background: var(--ok-soft); color: var(--ok); }
+.sc-mild { background: #eef7e2; color: #4d7c0f; }
+.sc-mid { background: var(--warn-soft); color: #b45309; }
+.sc-bad { background: var(--bad-soft); color: var(--bad); }
+.sc-none { background: #f2f4f8; color: var(--t3); }
+
+/* ==========================================================================
+   进度条
+   ========================================================================== */
+.bar { height: 12rpx; background: #eef1f6; border-radius: 6rpx; overflow: hidden; }
+.bar-in { height: 100%; background: var(--brand); border-radius: 6rpx; }
+.bar-ok .bar-in { background: var(--ok); }
+
+/* ==========================================================================
+   空状态
+   ========================================================================== */
+.empty { padding: 100rpx 40rpx; text-align: center; }
+.empty-ico { font-size: 76rpx; line-height: 1; opacity: 0.35; }
+.empty-txt { margin-top: 20rpx; font-size: 28rpx; color: var(--t3); }
+.empty-sub { margin-top: 10rpx; font-size: 24rpx; color: #b9bfc9; }
+
+/* ==========================================================================
+   分隔
+   ========================================================================== */
+.divider { height: 1rpx; background: var(--line); margin: 24rpx 0; }
+.divider-dash { height: 1rpx; border-top: 1rpx dashed var(--line); margin: 24rpx 0; }
+
+/* ==========================================================================
+   richNodes 模板样式（模板自身不带样式，必须放全局）
+   ========================================================================== */
+.rn { font-size: 30rpx; line-height: 1.9; color: var(--t1); word-break: break-word; }
+.rn-t { font-size: 30rpx; line-height: 1.9; }
+.rn-br { height: 0; }
+.rn-fx {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 4rpx;
+  /* 公式图是白底黑字，与页面融合即可 */
+}
+.rn-photo {
+  display: block;
+  width: 620rpx;
+  max-width: 100%;
+  margin: 16rpx 0;
+  border-radius: 12rpx;
+  border: 1rpx solid var(--line);
+  background: #fafbfd;
+}
+.rn-empty { color: var(--t3); font-size: 26rpx; }
+.rn-sm { font-size: 26rpx; line-height: 1.75; }
+.rn-sm .rn-t { font-size: 26rpx; line-height: 1.75; }
+.rn-sm .rn-fx { transform: scale(0.9); }
+
+/* ==========================================================================
+   区块标题：带左侧色条的段落标题
+   ========================================================================== */
+.blk {
+  border-radius: 20rpx;
+  background: #fff;
+  padding: 24rpx 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(22, 24, 29, 0.04);
+}
+.blk-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+.blk-bar {
+  width: 6rpx;
+  height: 30rpx;
+  border-radius: 3rpx;
+  background: var(--brand);
+  margin-right: 14rpx;
+}
+.blk-title { font-size: 28rpx; font-weight: 600; }
+.blk-head-right { margin-left: auto; font-size: 24rpx; color: var(--t3); }
+
+/* 提示条 */
+.note {
+  display: flex;
+  gap: 12rpx;
+  padding: 18rpx 22rpx;
+  border-radius: 14rpx;
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+.note-warn { background: var(--warn-soft); color: #92400e; }
+.note-lock { background: #f2f4f8; color: var(--t2); }
+
+/* ============ 通用 chip（列表筛选 / 详情疑惑点选类型共用） ============ */
+.chip {
+  font-size: 24rpx;
+  color: var(--t2);
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  padding: 8rpx 22rpx;
+  flex-shrink: 0;
+}
+.chip-on { background: var(--brand-soft); color: var(--brand); border-color: var(--brand-soft); font-weight: 500; }
