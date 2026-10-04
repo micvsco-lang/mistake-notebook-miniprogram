@@ -221,7 +221,7 @@ new（待订正） ──提交订正──▶ analyzed（已分析） ──训
 > 否则会报「解析脚本失败」；而且要走「导入脚本 → 选文件」，把网页上的脚本文本直接粘进去不行。
 > 真装不上就别耗着 —— 回 ① 截图导入，五分钟就能搬完一份作业。
 
-> 手机版 **Chrome 会忽略收藏里的 `javascript:` 地址**，别在 Chrome 上折腾书签。
+> 手机版 **Chrome 会忽略收藏里的 javascript: 地址**，别在 Chrome 上折腾书签。
 
 > **入口可以是学习通 App**：App 里的作业本来就是一张网页，所以可以在 App 里打开作业 →
 > 「··· / 分享」→ 复制链接 → 用手机浏览器打开，再执行脚本。
@@ -281,7 +281,7 @@ new（待订正） ──提交订正──▶ analyzed（已分析） ──训
 2. 在微信开发者工具里部署 `cloudfunctions/recognizeWork`；
 3. 在云函数配置里加一个环境变量 `VLM_API_KEY` = 你的大模型 API Key，**并把超时改成 60 秒**（默认太短，视觉模型一次要几秒到十几秒）。
 
-**换模型只改环境变量 `VLM_PROVIDER`**，内置五种预设：
+**换模型只改环境变量 VLM_PROVIDER**，内置五种预设：
 
 | `VLM_PROVIDER` | 模型 | 说明 |
 |---|---|---|
@@ -399,7 +399,7 @@ node tools/check.js && node tools/test-logic.js && node tools/test-pages.js
 **为什么识别出来的题还要我自己写订正？**
 这是刻意的（见第十二节）。拍照只是换了种方式把题搬进来，不改变「先写错在哪，才解锁分析」的顺序。
 
-**`tools/e2e-simulator.js` 跑不起来？**
+**tools/e2e-simulator.js 跑不起来？**
 它需要微信开发者工具**已启动且服务端口已开**，并用 `NODE_PATH` 指向已安装 `miniprogram-automator` 的目录。日常提交 PR 只需要跑前三个脚本（`check.js` / `test-logic.js` / `test-pages.js`），不依赖开发者工具。
 
 **我没有学习通的作业数据，能玩吗？**

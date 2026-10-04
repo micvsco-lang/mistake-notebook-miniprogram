@@ -23,7 +23,7 @@
 见 README 第一节。三步：
 
 1. 装微信开发者工具
-2. 导入项目（**记得把 `project.config.json` 的 `appid` 换成你自己的或测试号**）
+2. 导入项目（**记得把 project.config.json 的 appid 换成你自己的或测试号**）
 3. 点编译
 
 不需要云开发、不需要任何 API Key，编译后就能看到完整界面和 5 道种子错题。
@@ -91,14 +91,14 @@ node tools/check.js && node tools/test-logic.js && node tools/test-pages.js
 
 改代码时请遵守，这些不是个人偏好，是有原因的：
 
-**1. 知识点只能从 `utils/kp.js` 的预置树里选，不许自由生成。**
+**1. 知识点只能从 utils/kp.js 的预置树里选，不许自由生成。**
 允许模型或用户自由命名知识点，同义节点（比如「上下确界」和「确界存在定理」）会污染掌握度统计，整棵树的分布图立刻失效。要加知识点，往树里加，不要在别处动态创建。
 
 **2. 错因固定 7 类（C1–C7），不许扩展。**（`utils/cause.js`）
 同理。云函数里对模型输出做了白名单硬过滤，只接受这 7 个 code —— 如果你加了新类别，云端会被过滤掉。
 
-**3. 页面 `data` 里没声明的字段，首次访问一定是 `undefined`。**
-凡是在事件处理里做 `.length` / `.forEach` 的数组，**必须在 `data` 里给初值**。（这个坑真实踩过，被 `test-pages.js` 抓出来了。）
+**3. 页面 data 里没声明的字段，首次访问一定是 undefined。**
+凡是在事件处理里做 `.length` / `.forEach` 的数组，**必须在 data 里给初值**。（这个坑真实踩过，被 `test-pages.js` 抓出来了。）
 
 **4. 不要引入新的网络请求。**
 整个应用的数据都在本机（`wx.setStorageSync`）。唯一的例外是拍照识别把图片发往**使用者自己的云开发环境**（这是设计的一部分）。除此之外不要引入 `wx.request`。
@@ -106,7 +106,7 @@ node tools/check.js && node tools/test-logic.js && node tools/test-pages.js
 **5. 云函数保持零依赖。**
 `cloudfunctions/*/package.json` 的 `dependencies` 是空的，这是刻意的 —— 部署最快，不用装 npm 包。如果确实需要依赖，请在 PR 里说明理由。
 
-**6. 公式图不要用 `rich-text` 渲染。**
+**6. 公式图不要用 rich-text 渲染。**
 题干是「文字 + 行内公式图」混排，`rich-text` 对行内图的尺寸几乎不可控。现有方案是构建期把 HTML 解析成节点数组，运行时用 `text` / `image` 精确排布。改这块之前请先读 `templates/nodes.wxml`。
 
 ---

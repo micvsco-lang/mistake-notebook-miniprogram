@@ -190,6 +190,29 @@ console.log('  其中 assets ' + (assetsSize / 1048576).toFixed(2) + ' MB');
 if (mpSize > 2 * 1048576) bad('超出主包 2 MB 限制', (mpSize / 1048576).toFixed(2) + ' MB');
 else ok();
 
+/* ---------------- 8. 文档能否安全复制到 GitHub ---------------- */
+section('文档体检');
+/* 这几份文档是要被人复制粘贴到 GitHub Issue / PR 里的。
+ * Markdown 渲染失败时不报错，只是把 ** 和 | 原样显示，很难看出原因。
+ * 详细规则见 tools/check-docs.js。
+ *
+ * ⚠️ 这里直接 require 而不起子进程 —— 本机 spawnSync 会返回 status=null
+ * 且捕获不到输出（与 e2e-simulator 那个 spawn EINVAL 是同类环境问题）。 */
+try {
+  const docCheck = require('./check-docs.js');
+  if (docCheck.errors) {
+    bad('文档有 ' + docCheck.errors + ' 处 Markdown 渲染错误',
+      '跑 node tools/check-docs.js 看详情');
+  } else {
+    ok();
+  }
+  if (docCheck.warns) {
+    console.log('  （提示）另有 ' + docCheck.warns + ' 处提醒（主要是表格，网页阅读无碍）');
+  }
+} catch (e) {
+  console.log('  （跳过）无法运行 check-docs.js');
+}
+
 /* ---------------- 汇总 ---------------- */
 console.log('\n' + '='.repeat(46));
 if (fail) {
