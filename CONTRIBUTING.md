@@ -44,9 +44,9 @@ node tools/check.js && node tools/test-logic.js && node tools/test-pages.js
 
 | 脚本 | 检查什么 | 当前项数 |
 |---|---|---|
-| `check.js` | JSON/JS 语法、页面注册与四文件齐全、WXML 标签配对、WXSS 括号、模板与图片引用、包体积 | 121 |
-| `test-logic.js` | 数据层状态机、错因引擎、判分、复习排程 | 109 |
-| `test-pages.js` | 用 mock 的 `wx` API 真跑各页面生命周期与事件处理 | 139 |
+| `check.js` | JSON/JS 语法、页面注册与四文件齐全、WXML 标签配对、WXSS 括号、模板与图片引用、包体积 | 131 |
+| `test-logic.js` | 数据层状态机、错因引擎、判分、复习排程、知识点搜索、bbox 校验 | 235 |
+| `test-pages.js` | 用 mock 的 `wx` API 真跑各页面生命周期与事件处理 | 262 |
 
 （第四层 `tools/e2e-simulator.js` 需要开发者工具，可选。）
 
@@ -58,9 +58,15 @@ node tools/check.js && node tools/test-logic.js && node tools/test-pages.js
 
 ### 特别欢迎
 
+- **🔥 参与「本地智能识图」的实现** —— 这是当前最大的缺口，也是作者最想要的一块。
+  目标是把拍照识别从「云端视觉大模型」改成「完全本地、零 API、离线可用」。
+  详细需求、技术难点、**已经写好可以直接复用的代码**见
+  **[ROADMAP-本地识图.md](ROADMAP-本地识图.md)**。
+  建议从**区域分割**（难度中等、见效快）入手；**只调研可行性、不写实现，也非常欢迎**。
 - **适配其他课程／教材的知识点树。** 目前只覆盖「工科数学分析」和「线性代数」两章。如果你学的是别的课，扩充 `miniprogram/utils/kp.js` 是极有价值的贡献。
 - **补充巩固训练题库。** `miniprogram/data/drills.js` 现在只有 14 道题，覆盖 5 个知识点 —— 远远不够。这是最能提升工具实用性的地方。
 - **改进识别提示词。** `cloudfunctions/recognizeWork/index.js` 里的 `SYSTEM` 提示词决定了提取质量。如果你发现某类作业照片识别效果差，欢迎带着**实际照片和识别结果对比**来提改进。
+  （注意：这块的长期方向是改成纯本地实现，见 ROADMAP。）
 - **文档纠错。** 发现 README 里说法过时、步骤走不通，直接改。
 - **本机环境适配的坑。** 如果你在 macOS / Linux 上跑通了，欢迎补充说明（目前文档主要面向 Windows）。
 
