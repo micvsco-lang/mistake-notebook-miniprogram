@@ -71,12 +71,16 @@ const isRed = (r, g, b) => r > 120 && r - g > 40 && r - b > 40;
 
 ## 已经写好的部分（别重写）
 
-| 已有 | 位置 | 说明 |
-|---|---|---|
-| 按坐标裁切并落盘 | `miniprogram/utils/crop.js` | `computeRect()` 是**纯函数**，含越界夹紧、最小边长校验，直接被新方案调用 |
-| 取像素 | `wx.createOffscreenCanvas` + `getImageData` | 拿得到每个像素的 RGB，颜色分层的前提 |
-| 四栏核对卡片 | `miniprogram/pages/import/` | 界面已经做好，只差数据来源 |
-| 文字图混排渲染 | `miniprogram/templates/nodes.wxml` | 转录结果有地方放 |
+**这些都已经写好了，直接调用，不用重写：**
+
+- **按坐标裁切并落盘** —— `miniprogram/utils/crop.js`
+  里面的 `computeRect()` 是纯函数，含越界夹紧、最小边长校验，新方案直接调它就行
+- **取像素** —— `wx.createOffscreenCanvas` + `getImageData`
+  拿得到每个像素的 RGB，这是做颜色分层的前提
+- **四栏核对卡片** —— `miniprogram/pages/import/`
+  界面已经做好了，只差数据来源
+- **文字图混排渲染** —— `miniprogram/templates/nodes.wxml`
+  转录出来的文字有地方放
 
 另外 `cloudfunctions/recognizeWork/index.js` 共 763 行，**其中只有约 100 行是真正的识图逻辑**，
 其余是 HTTPS 调用、鉴权、重试、限流、五家模型适配 —— 本地版可以整块删掉。
